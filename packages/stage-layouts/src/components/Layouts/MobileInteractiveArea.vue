@@ -12,6 +12,7 @@ import { useChatOrchestratorStore } from '@proj-airi/stage-ui/stores/chat'
 import { useChatMaintenanceStore } from '@proj-airi/stage-ui/stores/chat/maintenance'
 import { useChatSessionStore } from '@proj-airi/stage-ui/stores/chat/session-store'
 import { useChatStreamStore } from '@proj-airi/stage-ui/stores/chat/stream-store'
+import { useImageViewControl } from '@proj-airi/stage-ui/stores/image-view-control'
 import { useL2dViewControl } from '@proj-airi/stage-ui/stores/live2d'
 import { useConsciousnessStore } from '@proj-airi/stage-ui/stores/modules/consciousness'
 import { useProvidersStore } from '@proj-airi/stage-ui/stores/providers'
@@ -75,6 +76,7 @@ useResizeObserver(document.documentElement, () => screenSafeArea.update())
 const { themeColorsHueDynamic } = storeToRefs(useSettings())
 const { viewControlsEnabled: l2dViewCtrlEnabled } = useL2dViewControl()
 const { viewControlsEnabled: threeViewCtrlEnabled } = useThreeViewControl()
+const { viewControlsEnabled: imageViewCtrlEnabled } = useImageViewControl()
 const settingsAudioDevice = useSettingsAudioDevice()
 const { enabled, stream } = storeToRefs(settingsAudioDevice)
 const { ingest, onAfterMessageComposed } = chatOrchestrator
@@ -174,7 +176,7 @@ onMounted(() => {
     <KeepAlive>
       <Transition name="fade">
         <ChatHistory
-          v-if="!threeViewCtrlEnabled && !l2dViewCtrlEnabled"
+          v-if="!threeViewCtrlEnabled && !l2dViewCtrlEnabled && !imageViewCtrlEnabled"
           variant="mobile"
           :messages="historyMessages"
           :sending="sending"

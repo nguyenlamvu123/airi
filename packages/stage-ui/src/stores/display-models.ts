@@ -13,6 +13,7 @@ export enum DisplayModelFormat {
   PMXZip = 'pmx-zip',
   PMXDirectory = 'pmx-directory',
   PMD = 'pmd',
+  Image = 'image',
 }
 
 export type DisplayModel
@@ -24,6 +25,7 @@ const presetLive2dFreeUrl = new URL('../assets/live2d/models/hiyori_free_zh.zip'
 const presetLive2dPreview = new URL('../assets/live2d/models/hiyori/preview.png', import.meta.url).href
 const presetSimpleJaUrl = new URL('../assets/live2d/models/simple_ja.zip', import.meta.url).href
 const presetSimpleJaPreview = new URL('../assets/live2d/models/simple_ja/preview.png', import.meta.url).href
+const presetCharacterImageUrl = new URL('../assets/characters/character.png', import.meta.url).href
 const presetVrmAvatarAUrl = new URL('../assets/vrm/models/AvatarSample-A/AvatarSample_A.vrm', import.meta.url).href
 const presetVrmAvatarAPreview = new URL('../assets/vrm/models/AvatarSample-A/preview.png', import.meta.url).href
 const presetVrmAvatarBUrl = new URL('../assets/vrm/models/AvatarSample-B/AvatarSample_B.vrm', import.meta.url).href
@@ -50,6 +52,7 @@ export interface DisplayModelURL {
 }
 
 const displayModelsPresets: DisplayModel[] = [
+  { id: 'preset-image-character', format: DisplayModelFormat.Image, type: 'url', url: presetCharacterImageUrl, name: 'Character (Image)', previewImage: presetCharacterImageUrl, importedAt: 1733113886840 },
   { id: 'preset-live2d-simple-ja', format: DisplayModelFormat.Live2dZip, type: 'url', url: presetSimpleJaUrl, name: 'Simple (JA)', previewImage: presetSimpleJaPreview, importedAt: 1733113886840 },
   { id: 'preset-live2d-1', format: DisplayModelFormat.Live2dZip, type: 'url', url: presetLive2dProUrl, name: 'Hiyori (Pro)', previewImage: presetLive2dPreview, importedAt: 1733113886840 },
   { id: 'preset-live2d-2', format: DisplayModelFormat.Live2dZip, type: 'url', url: presetLive2dFreeUrl, name: 'Hiyori (Free)', previewImage: presetLive2dPreview, importedAt: 1733113886840 },

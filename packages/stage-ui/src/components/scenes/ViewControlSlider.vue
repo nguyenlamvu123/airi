@@ -10,6 +10,11 @@ import { storeToRefs } from 'pinia'
 import { computed, onUnmounted } from 'vue'
 
 import {
+  defaultImageControlConfig as imageControlConfig,
+  formatter as imageFormatter,
+  useImageViewControl,
+} from '../../stores/image-view-control'
+import {
   defaultControlConfig as live2dControlConfig,
   formatter as live2dFormatter,
   useL2dViewControl,
@@ -19,13 +24,16 @@ import { useSettingsStageModel } from '../../stores/settings/stage-model'
 const { stageModelRenderer } = storeToRefs(useSettingsStageModel())
 const live2d = useL2dViewControl()
 const three = useThreeViewControl()
+const image = useImageViewControl()
 const { sceneMutationLocked } = storeToRefs(useModelStore())
 
-const activeRenderer = computed<'live2d' | 'vrm' | null>(() => {
+const activeRenderer = computed<'live2d' | 'vrm' | 'image' | null>(() => {
   if (stageModelRenderer.value === 'live2d')
     return 'live2d'
   if (stageModelRenderer.value === 'vrm')
     return 'vrm'
+  if (stageModelRenderer.value === 'image')
+    return 'image'
   return null
 })
 
@@ -34,6 +42,8 @@ const controlEnabled = computed(() => {
     return live2d.viewControlsEnabled.value
   if (activeRenderer.value === 'vrm')
     return three.viewControlsEnabled.value
+  if (activeRenderer.value === 'image')
+    return image.viewControlsEnabled.value
   return false
 })
 
@@ -42,6 +52,8 @@ const activeControlKey = computed(() => {
     return live2d.viewControlMode.value
   if (activeRenderer.value === 'vrm')
     return three.viewControlMode.value
+  if (activeRenderer.value === 'image')
+    return image.viewControlMode.value
   return null
 })
 
@@ -50,6 +62,8 @@ const activeControlConfig = computed(() => {
     return live2dControlConfig[live2d.viewControlMode.value]
   if (activeRenderer.value === 'vrm')
     return threeControlConfig[three.viewControlMode.value]
+  if (activeRenderer.value === 'image')
+    return imageControlConfig[image.viewControlMode.value]
   return null
 })
 
@@ -81,6 +95,17 @@ const controlledValue = computed({
       }
     }
 
+    if (activeRenderer.value === 'image') {
+      switch (image.viewControlMode.value) {
+        case 'x':
+          return image.position.value.x
+        case 'y':
+          return image.position.value.y
+        case 'scale':
+          return image.scale.value
+      }
+    }
+
     return 0
   },
   set(value) {
@@ -94,6 +119,10 @@ const controlledValue = computed({
         return
       three.set(three.viewControlMode.value, value)
     }
+
+    if (activeRenderer.value === 'image') {
+      image.set(image.viewControlMode.value, value)
+    }
   },
 })
 
@@ -102,12 +131,15 @@ const formattedValue = computed(() => {
     return live2dFormatter[live2d.viewControlMode.value](controlledValue.value)
   if (activeRenderer.value === 'vrm')
     return threeFormatter[three.viewControlMode.value](controlledValue.value)
+  if (activeRenderer.value === 'image')
+    return imageFormatter[image.viewControlMode.value](controlledValue.value)
   return ''
 })
 
 onUnmounted(() => {
   live2d.viewControlsEnabled.value = false
   three.viewControlsEnabled.value = false
+  image.viewControlsEnabled.value = false
 })
 </script>
 

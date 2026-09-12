@@ -45,7 +45,7 @@ export function useDataMaintenance() {
 
   async function deleteAllModels() {
     await displayModelsStore.resetDisplayModels()
-    settingsStore.stageModelSelected = 'preset-live2d-simple-ja'
+    settingsStore.stageModelSelected = 'preset-image-character'
     await settingsStore.updateStageModel()
   }
 

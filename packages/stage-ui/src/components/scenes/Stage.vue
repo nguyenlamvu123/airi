@@ -19,7 +19,7 @@ import { ThreeScene } from '@proj-airi/stage-ui-three'
 import { animations } from '@proj-airi/stage-ui-three/assets/vrm'
 import { createQueue } from '@proj-airi/stream-kit'
 import { Callout } from '@proj-airi/ui'
-import { useBroadcastChannel } from '@vueuse/core'
+import { useBroadcastChannel, useElementBounding } from '@vueuse/core'
 // import { createTransformers } from '@xsai-transformers/embed'
 // import embedWorkerURL from '@xsai-transformers/embed/worker?worker&url'
 // import { embed } from '@xsai/embed'
@@ -41,6 +41,7 @@ import { createStageTtsSession } from '../../libs/speech/tts-session'
 import { useAudioContext, useSpeakingStore } from '../../stores/audio'
 import { useBackgroundStore } from '../../stores/background'
 import { useChatOrchestratorStore } from '../../stores/chat'
+import { useImageViewControl } from '../../stores/image-view-control'
 import { useLlmStreamingControlStore } from '../../stores/llm-streaming-control'
 import { useAiriCardStore } from '../../stores/modules'
 import { useSpeechStore } from '../../stores/modules/speech'
@@ -182,6 +183,15 @@ const backgroundStore = useBackgroundStore()
 const { activeBackgroundUrl } = storeToRefs(backgroundStore)
 
 const { currentMotion } = storeToRefs(useLive2dParams())
+
+const imageStageRef = ref<HTMLElement>()
+const imageStageRect = useElementBounding(imageStageRef)
+const { position: imagePosition, scale: imageScale } = useImageViewControl()
+const imageTransformStyle = computed(() => {
+  const x = (imagePosition.value.x / 100) * imageStageRect.width.value
+  const y = -(imagePosition.value.y / 100) * imageStageRect.height.value
+  return { transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${imageScale.value})` }
+})
 
 const emotionsQueue = createQueue<EmotionPayload>({
   handlers: [
@@ -885,7 +895,7 @@ onMounted(async () => {
 })
 
 watch([stageModelRenderer, () => props.paused], ([renderer]) => {
-  if (renderer === 'godot') {
+  if (renderer === 'godot' || renderer === 'image') {
     componentState.value = 'mounted'
   }
 
@@ -896,6 +906,23 @@ watch([stageModelRenderer, () => props.paused], ([renderer]) => {
 
   syncLipSyncLoop()
 }, { immediate: true })
+
+let characterImageCanvasElement: HTMLCanvasElement | undefined
+
+// NOTICE:
+// The static image renderer draws the character onto an offscreen canvas so the
+// desktop pet's pixel-based transparency sampling keeps working for the image
+// character. Removal condition: image characters gain their own native capture
+// path.
+function onCharacterImageLoad(event: Event) {
+  const target = event.currentTarget as HTMLImageElement
+  const canvas = document.createElement('canvas')
+  canvas.width = target.naturalWidth
+  canvas.height = target.naturalHeight
+  canvas.getContext('2d')?.drawImage(target, 0, 0)
+  characterImageCanvasElement = canvas
+  componentState.value = 'mounted'
+}
 
 function canvasElement() {
   if (stageModelRenderer.value === 'live2d')
@@ -909,6 +936,9 @@ function canvasElement() {
 
   else if (stageModelRenderer.value === 'mmd')
     return mmdSceneRef.value?.canvasElement()
+
+  else if (stageModelRenderer.value === 'image')
+    return characterImageCanvasElement
 }
 
 function readRenderTargetRegionAtClientPoint(clientX: number, clientY: number, radius: number) {
@@ -918,14 +948,39 @@ function readRenderTargetRegionAtClientPoint(clientX: number, clientY: number, r
   return vrmViewerRef.value?.readRenderTargetRegionAtClientPoint?.(clientX, clientY, radius) ?? null
 }
 
+/** Captures the static character image as a PNG blob so photos still work in image renderer mode. */
+function captureImageFrame(): Promise<Blob | undefined> {
+  const url = stageModelSelectedUrl.value
+  if (!url)
+    return Promise.resolve(undefined)
+
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.src = url
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      canvas.getContext('2d')?.drawImage(img, 0, 0)
+      canvas.toBlob(blob => resolve(blob ?? undefined), 'image/png')
+    }
+    img.onerror = () => resolve(undefined)
+  })
+}
+
 async function captureFrame() {
-  const charBlob = await (stageModelRenderer.value === 'live2d'
-    ? live2dSceneRef.value?.captureFrame()
-    : stageModelRenderer.value === 'vrm'
-      ? vrmViewerRef.value?.captureFrame()
-      : stageModelRenderer.value === 'mmd'
-        ? mmdSceneRef.value?.captureFrame()
-        : spineSceneRef.value?.captureFrame())
+  let charBlob: Blob | null | undefined
+  if (stageModelRenderer.value === 'live2d')
+    charBlob = await live2dSceneRef.value?.captureFrame()
+  else if (stageModelRenderer.value === 'vrm')
+    charBlob = await vrmViewerRef.value?.captureFrame()
+  else if (stageModelRenderer.value === 'mmd')
+    charBlob = await mmdSceneRef.value?.captureFrame()
+  else if (stageModelRenderer.value === 'spine')
+    charBlob = await spineSceneRef.value?.captureFrame()
+  else if (stageModelRenderer.value === 'image')
+    charBlob = await captureImageFrame()
 
   if (!activeBackgroundUrl.value || !charBlob)
     return charBlob
@@ -1073,6 +1128,21 @@ defineExpose({
         :current-audio-source="currentAudioSource"
         @error="console.error"
       />
+      <div
+        v-if="stageModelRenderer === 'image' && showStage"
+        ref="imageStageRef"
+        class="relative h-full w-full flex-1"
+      >
+        <img
+          :src="stageModelSelectedUrl"
+          :style="imageTransformStyle"
+          class="absolute left-1/2 top-1/2 max-h-full max-w-full object-contain"
+          alt=""
+          draggable="false"
+          @load="onCharacterImageLoad"
+          @error="componentState = 'mounted'"
+        >
+      </div>
       <div
         v-if="stageModelRenderer === 'godot'"
         :class="[
