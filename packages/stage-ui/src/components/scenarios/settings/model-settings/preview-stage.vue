@@ -5,10 +5,11 @@ import { Live2DScene } from '@proj-airi/stage-ui-live2d'
 import { MMDScene } from '@proj-airi/stage-ui-mmd'
 import { SpineScene } from '@proj-airi/stage-ui-spine'
 import { ThreeScene, useModelStore } from '@proj-airi/stage-ui-three'
-import { useMouse } from '@vueuse/core'
+import { useElementBounding, useMouse } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
 
+import { useImageViewControl } from '../../../../stores/image-view-control'
 import { useSettings } from '../../../../stores/settings'
 import {
   createEmptyModelSettingsRuntimeSnapshot,
@@ -160,6 +161,18 @@ const runtimeSnapshot = computed<ModelSettingsRuntimeSnapshot>(() => {
     })
   }
 
+  if (stageModelRenderer.value === 'image') {
+    return createEmptyModelSettingsRuntimeSnapshot({
+      ownerInstanceId: vrmPreviewStageInstanceId,
+      renderer: 'image',
+      phase: hasModel ? 'mounted' : 'no-model',
+      controlsLocked: false,
+      previewAvailable: hasModel,
+      canCapturePreview: false,
+      updatedAt: Date.now(),
+    })
+  }
+
   return createEmptyModelSettingsRuntimeSnapshot({
     ownerInstanceId: vrmPreviewStageInstanceId,
     updatedAt: Date.now(),
@@ -177,6 +190,15 @@ const cursorPosition = computed(() => ({
   x: mouseX.value,
   y: mouseY.value,
 }))
+
+const imagePreviewRef = ref<HTMLElement>()
+const imagePreviewRect = useElementBounding(imagePreviewRef)
+const { position: imagePosition, scale: imageScale } = useImageViewControl()
+const imageTransformStyle = computed(() => {
+  const x = (imagePosition.value.x / 100) * imagePreviewRect.width.value
+  const y = -(imagePosition.value.y / 100) * imagePreviewRect.height.value
+  return { transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${imageScale.value})` }
+})
 </script>
 
 <template>
@@ -223,6 +245,19 @@ const cursorPosition = computed(() => ({
         :cursor-position="cursorPosition"
         :enable-orbit-controls="true"
       />
+    </div>
+  </template>
+  <template v-if="stageModelRenderer === 'image'">
+    <div
+      ref="imagePreviewRef"
+      class="relative h-full w-full"
+    >
+      <img
+        :src="stageModelSelectedUrl"
+        :style="imageTransformStyle"
+        class="absolute left-1/2 top-1/2 max-h-full max-w-full object-contain"
+        alt=""
+      >
     </div>
   </template>
 </template>

@@ -7,25 +7,26 @@ import { computed, watch } from 'vue'
 
 import { DisplayModelFormat, useDisplayModelsStore } from '../display-models'
 
-export type StageModelRenderer = 'live2d' | 'vrm' | 'spine' | 'mmd' | 'godot' | 'disabled' | undefined
+export type StageModelRenderer = 'live2d' | 'vrm' | 'spine' | 'mmd' | 'image' | 'godot' | 'disabled' | undefined
 type BuiltInStageModelRenderer = Exclude<StageModelRenderer, 'godot'>
 
 export const useSettingsStageModel = defineStore('settings-stage-model', () => {
   const displayModelsStore = useDisplayModelsStore()
   let stageModelUpdateSequence = 0
   const stageModelStorageKey = 'settings/stage/model'
-  const defaultStageModelId = 'preset-live2d-simple-ja'
-  const previousDefaultStageModelId = 'preset-live2d-1'
+  const defaultStageModelId = 'preset-image-character'
+  const previousDefaultStageModelIds = ['preset-live2d-1', 'preset-live2d-simple-ja']
 
   const stageModelSelectedState = useLocalStorageManualReset<string>(stageModelStorageKey, defaultStageModelId)
 
   // NOTICE:
-  // One-time migration from the previous default preset (Hiyori Pro) to the new
-  // Simple (JA) preset. Browsers that never changed the model have the old
-  // default id persisted under the storage key, so a new `defaultStageModelId`
-  // alone would never show on stage. Users who explicitly picked another preset
-  // keep their choice. Removal condition: the old Hiyori default is retired.
-  if (stageModelSelectedState.value === previousDefaultStageModelId) {
+  // One-time migration from the previous default presets (Hiyori Pro, then
+  // Simple (JA)) to the new Character image preset. Browsers that never changed
+  // the model have the old default id persisted under the storage key, so a new
+  // `defaultStageModelId` alone would never show on stage. Users who explicitly
+  // picked another preset keep their choice. Removal condition: both old
+  // defaults are retired.
+  if (previousDefaultStageModelIds.includes(stageModelSelectedState.value)) {
     stageModelSelectedState.value = defaultStageModelId
   }
   const stageModelSelected = computed<string>({
@@ -70,6 +71,8 @@ export const useSettingsStageModel = defineStore('settings-stage-model', () => {
       case DisplayModelFormat.PMXDirectory:
       case DisplayModelFormat.PMD:
         return 'mmd'
+      case DisplayModelFormat.Image:
+        return 'image'
       default:
         return 'disabled'
     }

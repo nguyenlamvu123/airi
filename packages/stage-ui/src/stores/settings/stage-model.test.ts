@@ -35,7 +35,15 @@ describe('settings stage model store', () => {
   it('migrates the persisted previous default preset to the new default once', () => {
     const store = useSettingsStageModel()
 
-    expect(store.stageModelSelected).toBe('preset-live2d-simple-ja')
+    expect(store.stageModelSelected).toBe('preset-image-character')
+  })
+
+  it('migrates an explicitly persisted pre-image default preset to the new default', () => {
+    persistedStageModelId = 'preset-live2d-simple-ja'
+
+    const store = useSettingsStageModel()
+
+    expect(store.stageModelSelected).toBe('preset-image-character')
   })
 
   it('keeps an explicitly persisted stage model instead of migrating it', () => {
@@ -49,11 +57,11 @@ describe('settings stage model store', () => {
   // https://github.com/moeru-ai/airi/issues/1984
   it('issue #1984: falls back to the default preset when a custom stage model is missing', async () => {
     const fallbackModel: DisplayModelURL = {
-      id: 'preset-live2d-simple-ja',
-      format: DisplayModelFormat.Live2dZip,
+      id: 'preset-image-character',
+      format: DisplayModelFormat.Image,
       type: 'url',
-      url: 'https://example.com/preset-live2d.zip',
-      name: 'Preset Live2D',
+      url: 'https://example.com/character.png',
+      name: 'Character (Image)',
       importedAt: 1,
     }
 
@@ -74,7 +82,7 @@ describe('settings stage model store', () => {
     expect(store.stageModelSelected).toBe(fallbackModel.id)
     expect(store.stageModelSelectedDisplayModel).toEqual(fallbackModel)
     expect(store.stageModelSelectedUrl).toBe(fallbackModel.url)
-    expect(store.stageModelRenderer).toBe('live2d')
+    expect(store.stageModelRenderer).toBe('image')
     expect(getDisplayModelSpy).toHaveBeenCalledWith('display-model-missing')
     expect(getDisplayModelSpy).toHaveBeenCalledWith(fallbackModel.id)
   })

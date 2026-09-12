@@ -116,7 +116,7 @@ const isTransparent = computed(() => {
   if (stageModelRenderer.value === 'vrm')
     return shouldUseThreeTransparencyHitTest.value ? isTransparentByThree.value : true
 
-  if (stageModelRenderer.value === 'live2d')
+  if (stageModelRenderer.value === 'live2d' || stageModelRenderer.value === 'image')
     return isTransparentByPixels.value
 
   return true
@@ -128,7 +128,7 @@ const isTransparentForMouseEvents = computed(() => {
   if (stageModelRenderer.value === 'vrm')
     return shouldUseThreeTransparencyHitTest.value ? isTransparentByThreeExact.value : true
 
-  if (stageModelRenderer.value === 'live2d')
+  if (stageModelRenderer.value === 'live2d' || stageModelRenderer.value === 'image')
     return isTransparentByPixelsExact.value
 
   return true
