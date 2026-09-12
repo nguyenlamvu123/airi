@@ -14,9 +14,20 @@ export const useSettingsStageModel = defineStore('settings-stage-model', () => {
   const displayModelsStore = useDisplayModelsStore()
   let stageModelUpdateSequence = 0
   const stageModelStorageKey = 'settings/stage/model'
-  const defaultStageModelId = 'preset-live2d-1'
+  const defaultStageModelId = 'preset-live2d-simple-ja'
+  const previousDefaultStageModelId = 'preset-live2d-1'
 
   const stageModelSelectedState = useLocalStorageManualReset<string>(stageModelStorageKey, defaultStageModelId)
+
+  // NOTICE:
+  // One-time migration from the previous default preset (Hiyori Pro) to the new
+  // Simple (JA) preset. Browsers that never changed the model have the old
+  // default id persisted under the storage key, so a new `defaultStageModelId`
+  // alone would never show on stage. Users who explicitly picked another preset
+  // keep their choice. Removal condition: the old Hiyori default is retired.
+  if (stageModelSelectedState.value === previousDefaultStageModelId) {
+    stageModelSelectedState.value = defaultStageModelId
+  }
   const stageModelSelected = computed<string>({
     get: () => stageModelSelectedState.value,
     set: (value) => {
