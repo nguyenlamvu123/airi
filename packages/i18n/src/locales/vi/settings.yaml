@@ -419,6 +419,10 @@ pages:
         title: Các Mô-Đun
         description: Đặt lại tùy chọn mô-đun và thông tin xác thực.
         reset: Đặt lại cài đặt mô-đun
+      character:
+        title: Danh tính nhân vật
+        description: Khôi phục persona mặc định Hương Ly Cover. Các phiên trò chuyện hiện tại sẽ bị xóa để persona mới có hiệu lực.
+        reset: Khôi phục persona mặc định
       providers:
         title: Nhà cung cấp
         description: Đã đặt lại toàn bộ thiết lập nhà cung cấp và thông tin xác thực.
@@ -449,6 +453,7 @@ pages:
       chats_deleted: Đã xóa các phiên trò chuyện.
       models_deleted: Đã xóa các mô hình.
       modules_reset: Đã đặt lại cài đặt mô-đun.
+      character_reset: Đã khôi phục persona nhân vật mặc định.
       providers_reset: Đã đặt lại cài đặt nhà cung cấp.
       all_deleted: Tất cả dữ liệu cục bộ đã bị xóa.
       desktop_window_centered: Desktop window moved to screen center.
@@ -709,6 +714,7 @@ pages:
             no_voices_hint: Bạn có thể nhập tên giọng nói tùy chỉnh bên dưới.
             pause: Tạm dừng
             play_sample: Nghe thử
+            restore_recommended_voice: Khôi phục giọng khuyến nghị
             search_models_placeholder: Tìm mô hình...
             search_models_results: Tìm thấy {count}/{total} mô hình
             search_voices_placeholder: Tìm giọng nói...

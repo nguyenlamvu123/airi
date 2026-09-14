@@ -1135,8 +1135,8 @@ defineExpose({
       >
         <img
           :src="stageModelSelectedUrl"
-          :style="imageTransformStyle"
-          class="absolute left-1/2 top-1/2 max-h-full max-w-full object-contain"
+          :style="{ ...imageTransformStyle, animationPlayState: paused ? 'paused' : 'running' }"
+          class="stage-image-idle absolute left-1/2 top-1/2 max-h-full max-w-full object-contain"
           alt=""
           draggable="false"
           @load="onCharacterImageLoad"
@@ -1166,3 +1166,38 @@ defineExpose({
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Subtle idle life on the static image while it awaits a rigged model:
+   breathe + sway through the individual translate/rotate properties so they
+   never collide with the inline `transform` that carries view-control position/scale. */
+.stage-image-idle {
+  animation: stage-image-idle-sway 7s ease-in-out infinite;
+  will-change: translate, rotate;
+}
+
+@keyframes stage-image-idle-sway {
+  0%, 100% {
+    translate: 0px -3px;
+    rotate: 0deg;
+  }
+  25% {
+    translate: 0px 0px;
+    rotate: -0.35deg;
+  }
+  50% {
+    translate: 0px 3px;
+    rotate: 0deg;
+  }
+  75% {
+    translate: 0px 0px;
+    rotate: 0.35deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-image-idle {
+    animation: none;
+  }
+}
+</style>

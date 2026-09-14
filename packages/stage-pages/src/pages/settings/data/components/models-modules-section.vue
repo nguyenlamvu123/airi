@@ -11,7 +11,7 @@ import { createDataSettingsStatusHelpers } from '../status'
 const emit = defineEmits<DataSettingsStatusEmits>()
 const { t } = useI18n()
 const { trackDataAction } = useAnalytics()
-const { deleteAllModels, resetModulesSettings } = useDataMaintenance()
+const { deleteAllModels, resetModulesSettings, resetCharacterIdentity } = useDataMaintenance()
 const { emitStatus, handleActionError } = createDataSettingsStatusHelpers(emit)
 
 async function deleteModels() {
@@ -30,6 +30,17 @@ function resetModules() {
     resetModulesSettings()
     trackDataAction({ action: 'modules_settings_reset' })
     emitStatus(t('settings.pages.data.status.modules_reset'))
+  }
+  catch (error) {
+    handleActionError(error)
+  }
+}
+
+function resetCharacterIdentityAction() {
+  try {
+    resetCharacterIdentity()
+    trackDataAction({ action: 'character_identity_reset' })
+    emitStatus(t('settings.pages.data.status.character_reset'))
   }
   catch (error) {
     handleActionError(error)
@@ -74,6 +85,28 @@ function resetModules() {
         <div :class="['flex flex-col items-start gap-2']">
           <DoubleCheckButton variant="caution" @confirm="resetModules">
             {{ t('settings.pages.data.sections.modules.reset') }}
+            <template #confirm>
+              {{ t('settings.pages.data.confirmations.yes') }}
+            </template>
+            <template #cancel>
+              {{ t('settings.pages.card.cancel') }}
+            </template>
+          </DoubleCheckButton>
+        </div>
+      </div>
+
+      <div :class="['grid grid-cols-1 items-start gap-3 md:grid-cols-[minmax(0,1fr)_auto]']">
+        <div :class="['flex flex-col gap-1 md:max-w-[560px]']">
+          <div :class="['text-lg font-medium']">
+            {{ t('settings.pages.data.sections.character.title') }}
+          </div>
+          <p :class="['text-sm text-neutral-600 dark:text-neutral-400']">
+            {{ t('settings.pages.data.sections.character.description') }}
+          </p>
+        </div>
+        <div :class="['flex flex-col items-start gap-2']">
+          <DoubleCheckButton variant="caution" @confirm="resetCharacterIdentityAction">
+            {{ t('settings.pages.data.sections.character.reset') }}
             <template #confirm>
               {{ t('settings.pages.data.confirmations.yes') }}
             </template>

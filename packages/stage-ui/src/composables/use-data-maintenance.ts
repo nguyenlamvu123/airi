@@ -69,6 +69,15 @@ export function useDataMaintenance() {
     chatStore.resetAllSessions()
   }
 
+  // Restores the built-in persona (Hương Ly cover) from the current i18n prompt.
+  // Sessions bake their persona into the first system message on creation, so a
+  // persona reset only takes effect on newly created sessions after clearing the
+  // existing ones.
+  function resetCharacterIdentity() {
+    airiCardStore.restoreDefaultCardPersona()
+    deleteAllChatSessions()
+  }
+
   async function exportChatSessions() {
     const data = await chatStore.exportSessions()
     return new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
@@ -119,6 +128,7 @@ export function useDataMaintenance() {
     resetProvidersSettings,
     resetModulesSettings,
     deleteAllChatSessions,
+    resetCharacterIdentity,
     exportChatSessions,
     importChatSessions,
     deleteAllData,

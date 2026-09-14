@@ -141,6 +141,18 @@ export const useSpeechStore = defineStore('speech', () => {
     activeSpeechVoice.value = undefined
   }
 
+  // Re-seeds the curated default voice for the official providers: clears the
+  // persisted voice selection and reloads the catalog so setupOfficialSpeechAutoPick
+  // re-runs its recommended-voice fallback (it guards on a non-empty voice id).
+  async function restoreRecommendedVoice() {
+    const provider = activeSpeechProvider.value
+    if (provider !== OFFICIAL_SPEECH_PROVIDER_ID && provider !== OFFICIAL_SPEECH_STREAMING_PROVIDER_ID)
+      return false
+    clearVoiceSelection()
+    await loadVoicesForProvider(provider, activeSpeechModel.value || undefined)
+    return true
+  }
+
   // Streaming TTS voices are model-scoped: the server only returns recommended
   // voices for an explicit `?model=`. Ensure the active model is a valid
   // streaming model id so voice loading gets the right recommendations (parity
@@ -458,6 +470,7 @@ export const useSpeechStore = defineStore('speech', () => {
     speech,
     loadVoicesForProvider,
     getVoicesForProvider,
+    restoreRecommendedVoice,
     ensureStreamingDefaultModel,
     ensureActiveSpeechModel,
     generateSSML,
