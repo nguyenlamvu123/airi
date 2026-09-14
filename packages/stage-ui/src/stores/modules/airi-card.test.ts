@@ -120,4 +120,38 @@ describe('airi-card store', () => {
       voice_id: 'aria',
     })
   })
+
+  it('builds the default persona card with the Hương Ly cover identity', () => {
+    const cardStore = useAiriCardStore()
+    cardStore.initialize()
+
+    const card = cardStore.cards.get('default')
+    expect(card?.name).toBe('Hương Ly cover')
+    expect(card?.description).toContain('base.prompt.prefix')
+    expect(card?.description).toContain('base.prompt.suffix')
+  })
+
+  it('restores the default persona even when a stale persona card is persisted', () => {
+    const cardStore = useAiriCardStore()
+    cardStore.initialize()
+
+    // Simulate a persisted default card that predates the persona edits: the
+    // initialize() guard keeps it forever, so the user needs the restore action.
+    const stale = cardStore.cards.get('default')!
+    cardStore.cards.set('default', { ...stale, name: 'ReLU', description: 'stale AIRI persona' })
+
+    cardStore.restoreDefaultCardPersona()
+
+    const restored = cardStore.cards.get('default')
+    expect(restored?.name).toBe('Hương Ly cover')
+    expect(restored?.description).toContain('base.prompt.prefix')
+  })
+
+  it('creates a default persona card via restore when none exists yet', () => {
+    const cardStore = useAiriCardStore()
+    cardStore.restoreDefaultCardPersona()
+
+    expect(cardStore.cards.get('default')?.name).toBe('Hương Ly cover')
+    expect(cardStore.activeCardId).toBe('default')
+  })
 })

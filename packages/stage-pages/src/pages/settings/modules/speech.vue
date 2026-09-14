@@ -292,6 +292,12 @@ function selectSpeechSource(sourceId: string) {
   activeSpeechProvider.value = sourceId
 }
 
+// Re-seeds the curated recommended voice for the official providers so the
+// first-run default (e.g. the server-preferred voice) is restored.
+async function restoreRecommendedVoice() {
+  await speechStore.restoreRecommendedVoice()
+}
+
 function selectSpeechModel(modelOptionId: string) {
   const streamingModelId = modelIdFromStreamingOptionId(modelOptionId)
   const nextProvider = streamingModelId == null
@@ -778,9 +784,19 @@ function handleDeleteProvider(providerId: string) {
             </h2>
             <div class="flex flex-col items-start gap-1 text-neutral-400 md:flex-row md:items-center md:justify-between dark:text-neutral-500">
               <span>Customize how your AI assistant speaks</span>
-              <span v-if="currentSpeechVoiceId" class="text-sm text-neutral-400 font-medium dark:text-neutral-400">
-                Current voice: {{ currentSpeechVoiceId }}
-              </span>
+              <div class="flex flex-row items-center gap-2">
+                <span v-if="currentSpeechVoiceId" class="text-sm text-neutral-400 font-medium dark:text-neutral-400">
+                  Current voice: {{ currentSpeechVoiceId }}
+                </span>
+                <button
+                  v-if="isOfficialSpeechSourceSelected && currentSpeechVoiceId"
+                  type="button"
+                  class="rounded-md bg-neutral-100 px-2 py-1 text-xs text-neutral-600 transition-colors dark:bg-neutral-800/60 hover:bg-neutral-200 dark:text-neutral-300 dark:hover:bg-neutral-700/60"
+                  @click="restoreRecommendedVoice"
+                >
+                  {{ t('settings.pages.modules.speech.sections.section.provider-voice-selection.restore_recommended_voice') }}
+                </button>
+              </div>
             </div>
           </div>
 

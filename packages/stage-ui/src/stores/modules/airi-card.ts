@@ -330,17 +330,31 @@ export const useAiriCardStore = defineStore('airi-card', () => {
     }
   }
 
-  function initialize() {
-    if (cards.value.has('default'))
-      return
-    cards.value.set('default', newAiriCard({
-      name: 'ReLU',
+  // The default persona card is recreated from the current i18n prompt on first
+  // boot and again when the user explicitly restores the default persona. It is
+  // intentionally NOT refreshed automatically afterwards: users can edit the
+  // default card, and old persisted cards must keep working as-is.
+  function createDefaultPersonaCard() {
+    return newAiriCard({
+      name: 'Hương Ly cover',
       version: '1.0.0',
       description: SystemPromptV2(
         t('base.prompt.prefix'),
         t('base.prompt.suffix'),
       ).content,
-    }))
+    })
+  }
+
+  function initialize() {
+    if (cards.value.has('default'))
+      return
+    cards.value.set('default', createDefaultPersonaCard())
+    if (!activeCardId.value)
+      activeCardId.value = 'default'
+  }
+
+  function restoreDefaultCardPersona() {
+    cards.value.set('default', createDefaultPersonaCard())
     if (!activeCardId.value)
       activeCardId.value = 'default'
   }
@@ -404,6 +418,7 @@ export const useAiriCardStore = defineStore('airi-card', () => {
     getCard,
     resetState,
     initialize,
+    restoreDefaultCardPersona,
 
     currentModels: computed(() => {
       return {

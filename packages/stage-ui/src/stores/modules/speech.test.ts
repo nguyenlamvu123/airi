@@ -1,5 +1,6 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 
 import { OFFICIAL_SPEECH_PROVIDER_ID, OFFICIAL_SPEECH_STREAMING_PROVIDER_ID, providerOfficialSpeech } from '../../libs/providers/providers/official'
 import { useProvidersStore } from '../providers'
@@ -269,10 +270,9 @@ describe('speech store helpers', () => {
 
   /**
    * @example
-   * await speechStore.loadVoicesForProvider(OFFICIAL_SPEECH_PROVIDER_ID, 'microsoft/v1')
+   * await speechStore.restoreRecommendedVoice()
    */
-  it('uses another server recommended voice when the current locale has no recommendation', async () => {
-    i18nState.locale.value = 'ko-KR'
+  it('re-seeds the server recommended voice when a valid voice is persisted', async () => {
     vi.stubGlobal('localStorage', {
       getItem: vi.fn(() => null),
       setItem: vi.fn(),
@@ -289,17 +289,17 @@ describe('speech store helpers', () => {
       return new Response(JSON.stringify({
         voices: [
           {
-            id: 'ko-KR-SunHiNeural',
-            name: 'SunHi',
-            languages: [{ code: 'ko-KR', title: 'Korean' }],
+            id: 'en-US-JennyNeural',
+            name: 'Jenny',
+            languages: [{ code: 'en-US', title: 'English' }],
           },
           {
-            id: 'zh-CN-XiaochenNeural',
-            name: 'Xiaochen',
-            languages: [{ code: 'zh-CN', title: 'Chinese' }],
+            id: 'en-US-AvaMultilingualNeural',
+            name: 'Ava',
+            languages: [{ code: 'en-US', title: 'English' }],
           },
         ],
-        recommended: { 'zh-CN': 'zh-CN-XiaochenNeural' },
+        recommended: { 'en-US': 'en-US-AvaMultilingualNeural' },
       }), { status: 200, headers: { 'Content-Type': 'application/json' } })
     }) as typeof fetch)
 
@@ -316,11 +316,34 @@ describe('speech store helpers', () => {
       speechStore.ensureActiveSpeechModel()
       await speechStore.loadVoicesForProvider(OFFICIAL_SPEECH_PROVIDER_ID, speechStore.activeSpeechModel)
 
-      expect(speechStore.activeSpeechModel).toBe('microsoft/v1')
-      expect(speechStore.activeSpeechVoiceId).toBe('zh-CN-XiaochenNeural')
+      // Auto-pick seeded the server recommended voice on the first load.
+      expect(speechStore.activeSpeechVoiceId).toBe('en-US-AvaMultilingualNeural')
+
+      // Persist a different yet valid catalog voice: auto-pick guards on any
+      // non-empty voice id that exists in the catalog, so it stays stuck.
+      speechStore.activeSpeechVoiceId = 'en-US-JennyNeural'
+      await nextTick()
+
+      await speechStore.restoreRecommendedVoice()
+      await nextTick()
+
+      expect(speechStore.activeSpeechVoiceId).toBe('en-US-AvaMultilingualNeural')
     }
     finally {
       vi.unstubAllGlobals()
     }
+  })
+
+  /**
+   * @example
+   * await speechStore.restoreRecommendedVoice()
+   */
+  it('is a no-op for non-official providers and keeps the current voice', async () => {
+    const speechStore = useSpeechStore()
+    expect(speechStore.activeSpeechProvider).toBe('speech-noop')
+    speechStore.activeSpeechVoiceId = 'voice-a'
+
+    await expect(speechStore.restoreRecommendedVoice()).resolves.toBe(false)
+    expect(speechStore.activeSpeechVoiceId).toBe('voice-a')
   })
 })

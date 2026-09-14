@@ -439,6 +439,10 @@ pages:
         title: Modules
         description: Reset module preferences and credentials.
         reset: Reset module settings
+      character:
+        title: Character identity
+        description: Restore the default Hương Ly Cover persona. Existing chat sessions are deleted so the new persona takes effect.
+        reset: Restore default persona
       providers:
         title: Providers
         description: Reset all provider settings and credentials.
@@ -469,6 +473,7 @@ pages:
       chats_deleted: Chat sessions deleted.
       models_deleted: Models deleted.
       modules_reset: Module settings reset.
+      character_reset: Character persona restored to default.
       providers_reset: Provider settings reset.
       all_deleted: All local data deleted.
       desktop_window_centered: Desktop window moved to screen center.
@@ -743,6 +748,7 @@ pages:
             no_voices_hint: You can enter a custom voice name below.
             pause: Pause
             play_sample: Play Sample
+            restore_recommended_voice: Restore recommended voice
             search_models_placeholder: Search models...
             search_models_results: Found {count} of {total} models
             search_voices_placeholder: Search voices...
