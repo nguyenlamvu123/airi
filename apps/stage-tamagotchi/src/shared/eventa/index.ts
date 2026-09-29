@@ -336,6 +336,18 @@ export const widgetsFetch = defineInvokeEventa<WidgetSnapshot | void, { id: stri
 export const widgetsPrepareWindow = defineInvokeEventa<string | undefined, { id?: string }>('eventa:invoke:electron:windows:widgets:prepare')
 export const widgetsIframePublish = defineInvokeEventa<void, { id: string, event: Record<string, unknown> }>('eventa:invoke:electron:windows:widgets:iframe-publish')
 
+// Builtin story/reader tool: read a local text file so AIRI can recite it.
+export interface ElectronReadTextFilePayload {
+  /** Absolute path to an existing UTF-8 text file. */
+  path: string
+  /** Optional content cap in characters (defaults to 6_000). */
+  maxChars?: number
+}
+export type ElectronReadTextFileResult
+  = | { ok: true, content: string, truncated: boolean }
+    | { ok: false, error: string }
+export const electronReadTextFile = defineInvokeEventa<ElectronReadTextFileResult, ElectronReadTextFilePayload>('eventa:invoke:electron:fs:read-text-file')
+
 export const electronWindowClose = defineInvokeEventa<void>('eventa:invoke:electron:window:close')
 export type ElectronWindowLifecycleReason
   = | 'initial'

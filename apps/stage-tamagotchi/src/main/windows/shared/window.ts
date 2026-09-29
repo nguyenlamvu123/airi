@@ -2,13 +2,19 @@ import type { createContext } from '@moeru/eventa/adapters/electron/main'
 import type { ResizeDirection } from '@proj-airi/electron-eventa'
 import type { BrowserWindow, BrowserWindowConstructorOptions } from 'electron'
 
+import type { ElectronReadTextFileResult } from '../../../shared/eventa'
 import type { I18n } from '../../libs/i18n'
 import type { ServerChannel } from '../../services/airi/channel-server'
 
+import { Buffer } from 'node:buffer'
+import { open } from 'node:fs/promises'
+
+import { defineInvokeHandler } from '@moeru/eventa'
 import { isRendererUnavailable } from '@proj-airi/electron-vueuse/main'
 import { shell } from 'electron'
 import { isMacOS } from 'std-env'
 
+import { electronReadTextFile } from '../../../shared/eventa'
 import { createServerChannelService } from '../../services/airi/channel-server'
 import { createI18nService } from '../../services/airi/i18n'
 import { createAppService, createPowerMonitorService, createScreenService, createSystemPreferencesService, createWindowService } from '../../services/electron'
@@ -146,4 +152,34 @@ export async function setupBaseWindowElectronInvokes(params: {
   await createI18nService({ context: params.context, window: params.window, i18n: params.i18n })
 
   createServerChannelService({ serverChannel: params.serverChannel })
+
+  // Builtin story/reader tool: bounded UTF-8 read of a local text file.
+  defineInvokeHandler(params.context, electronReadTextFile, async ({ path, maxChars }): Promise<ElectronReadTextFileResult> => {
+    const limit = Math.max(1, Math.min(maxChars ?? 6_000, 50_000))
+    const byteLimit = (limit + 4) * 4 // worst-case UTF-8 expansion, bounded
+    const fileHandle = await open(path, 'r')
+    try {
+      const fileStats = await fileHandle.stat()
+      if (!fileStats.isFile())
+        return { ok: false, error: 'Path is not a file' }
+
+      // Never read whole files into memory; only the slice the model needs.
+      const readLength = Math.min(fileStats.size, byteLimit)
+      const buffer = Buffer.alloc(readLength)
+      const { bytesRead } = await fileHandle.read(buffer, 0, readLength, 0)
+      const fullContent = buffer.subarray(0, bytesRead).toString('utf8')
+      const content = fullContent.slice(0, limit)
+      return {
+        ok: true,
+        content,
+        truncated: fileStats.size > readLength || fullContent.length > limit,
+      }
+    }
+    catch (error) {
+      return { ok: false, error: error instanceof Error ? error.message : String(error) }
+    }
+    finally {
+      await fileHandle.close()
+    }
+  })
 }

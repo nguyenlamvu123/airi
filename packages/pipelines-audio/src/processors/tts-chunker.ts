@@ -27,6 +27,11 @@ export interface TtsInputChunkOptions {
   maximumWords?: number
   stripNarrative?: boolean
   keepNarrativeText?: boolean
+  /**
+   * BCP-47 locale used for word segmentation (e.g. `vi` for Vietnamese).
+   * Falls back to the environment default locale when omitted.
+   */
+  locale?: string
 }
 
 export interface TtsChunkItem {
@@ -43,6 +48,7 @@ export async function* chunkTtsInput(
     boost = 2,
     minimumWords = 4,
     maximumWords = 12,
+    locale,
   } = options ?? {}
 
   const iterator = readGraphemeClusters(
@@ -56,7 +62,10 @@ export async function* chunkTtsInput(
       : input,
   )
 
-  const segmenter = new Intl.Segmenter(undefined, { granularity: 'word' }) // I love Intl.Segmenter
+  // NOTICE: The locale must follow the spoken language, otherwise
+  // word-boundary detection miscounts multi-word languages (CJK, Vietnamese)
+  // and splits sentences at the wrong places for the upstream TTS provider.
+  const segmenter = new Intl.Segmenter(locale ?? undefined, { granularity: 'word' }) // I love Intl.Segmenter
 
   let yieldCount = 0
   let buffer = ''

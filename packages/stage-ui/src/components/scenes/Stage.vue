@@ -42,6 +42,7 @@ import { useAudioContext, useSpeakingStore } from '../../stores/audio'
 import { useBackgroundStore } from '../../stores/background'
 import { useChatOrchestratorStore } from '../../stores/chat'
 import { useImageViewControl } from '../../stores/image-view-control'
+import { useKeywordReactionsStore } from '../../stores/keyword-reactions'
 import { useLlmStreamingControlStore } from '../../stores/llm-streaming-control'
 import { useAiriCardStore } from '../../stores/modules'
 import { useSpeechStore } from '../../stores/modules/speech'
@@ -187,6 +188,8 @@ const { currentMotion } = storeToRefs(useLive2dParams())
 const imageStageRef = ref<HTMLElement>()
 const imageStageRect = useElementBounding(imageStageRef)
 const { position: imagePosition, scale: imageScale } = useImageViewControl()
+const keywordReactionsStore = useKeywordReactionsStore()
+const { activeReaction } = storeToRefs(keywordReactionsStore)
 const imageTransformStyle = computed(() => {
   const x = (imagePosition.value.x / 100) * imageStageRect.width.value
   const y = -(imagePosition.value.y / 100) * imageStageRect.height.value
@@ -1216,6 +1219,27 @@ defineExpose({
           @load="onCharacterImageLoad"
           @error="componentState = 'mounted'"
           @click="onCharacterImageClick"
+        >
+        <video
+          v-if="activeReaction && activeReaction.kind === 'video'"
+          :key="activeReaction.playbackId"
+          :src="activeReaction.url"
+          class="absolute left-1/2 top-1/2 max-h-full max-w-full object-contain"
+          :style="imageTransformStyle"
+          autoplay
+          playsinline
+          @ended="keywordReactionsStore.stopActive()"
+          @error="keywordReactionsStore.stopActive()"
+        />
+        <img
+          v-else-if="activeReaction && activeReaction.kind === 'image'"
+          :key="activeReaction.playbackId"
+          :src="activeReaction.url"
+          :style="imageTransformStyle"
+          class="absolute left-1/2 top-1/2 max-h-full max-w-full object-contain"
+          alt=""
+          draggable="false"
+          @error="keywordReactionsStore.stopActive()"
         >
         <span
           v-for="heart in heartParticles"
