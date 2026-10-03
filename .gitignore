@@ -143,3 +143,4 @@ apps/stage-tamagotchi/electron.vite.config.*.mjs
 
 docs/ai/context/verifications/
 .playwright-mcp/
+packages/stage-ui/src/assets/emoji-videos/

@@ -239,6 +239,15 @@ function resolveToolCallRerunToolset(toolName: string): ToolCallRerunToolset | u
   if (toolName === 'stage_widgets' || toolName === 'get_weather')
     return 'widgets'
 
+  if (
+    toolName === 'schedule_reminder'
+    || toolName === 'list_reminders'
+    || toolName === 'cancel_reminder'
+    || toolName === 'read_text_file'
+  ) {
+    return 'artistry'
+  }
+
   return undefined
 }
 

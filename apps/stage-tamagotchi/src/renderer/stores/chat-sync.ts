@@ -19,6 +19,8 @@ import { defineStore, storeToRefs } from 'pinia'
 import { ref, watch } from 'vue'
 
 import { imageJournalTools } from './tools/builtin/image-journal'
+import { reminderTools } from './tools/builtin/reminders'
+import { storyTellerTools } from './tools/builtin/story-teller'
 import { weatherTools } from './tools/builtin/weather'
 import { widgetsTools } from './tools/builtin/widgets'
 
@@ -297,16 +299,23 @@ export const useChatSyncStore = defineStore('stage-tamagotchi:chat-sync', () => 
   function resolveTools(toolset?: ToolsetId) {
     const toolsetRegistry: Record<string, () => Promise<any[]>> = {
       widgets: async () => {
-        const [w, we] = await Promise.all([widgetsTools(), weatherTools()])
-        return [...w, ...we]
+        const [w, we, r, st] = await Promise.all([
+          widgetsTools(),
+          weatherTools(),
+          reminderTools(),
+          storyTellerTools(),
+        ])
+        return [...w, ...we, ...r, ...st]
       },
       artistry: async () => {
-        const [ai, wi, we] = await Promise.all([
+        const [ai, wi, we, r, st] = await Promise.all([
           imageJournalTools(),
           widgetsTools(),
           weatherTools(),
+          reminderTools(),
+          storyTellerTools(),
         ])
-        return [...ai, ...wi, ...we]
+        return [...ai, ...wi, ...we, ...r, ...st]
       },
     }
 

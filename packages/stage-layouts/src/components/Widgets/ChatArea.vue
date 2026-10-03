@@ -9,6 +9,7 @@ import { useAudioAnalyzer } from '@proj-airi/stage-ui/composables'
 import { useAudioContext } from '@proj-airi/stage-ui/stores/audio'
 import { useChatOrchestratorStore } from '@proj-airi/stage-ui/stores/chat'
 import { useChatSessionStore } from '@proj-airi/stage-ui/stores/chat/session-store'
+import { useKeywordReactionsStore } from '@proj-airi/stage-ui/stores/keyword-reactions'
 import { useConsciousnessStore } from '@proj-airi/stage-ui/stores/modules/consciousness'
 import { useProvidersStore } from '@proj-airi/stage-ui/stores/providers'
 import { useSettings, useSettingsAudioDevice } from '@proj-airi/stage-ui/stores/settings'
@@ -43,6 +44,7 @@ const { askPermission } = useSettingsAudioDevice()
 const { enabled, stream } = storeToRefs(useSettingsAudioDevice())
 const chatOrchestrator = useChatOrchestratorStore()
 const chatSession = useChatSessionStore()
+const keywordReactionsStore = useKeywordReactionsStore()
 const { ingest, onAfterMessageComposed } = chatOrchestrator
 const { messages } = storeToRefs(chatSession)
 const { audioContext } = useAudioContext()
@@ -69,6 +71,9 @@ async function handleSend() {
 
   const textToSend = messageInput.value
   messageInput.value = ''
+
+  // Fire the keyword reaction early so the avatar reacts while the reply is streamed.
+  void keywordReactionsStore.triggerForText(textToSend)
 
   try {
     const providerConfig = providersStore.getProviderConfig(activeProvider.value)

@@ -41,6 +41,11 @@ export interface SpeechPipelineOptions<TAudio> {
   }
   logger?: LoggerLike
   priority?: ReturnType<typeof createPriorityResolver>
+  /**
+   * BCP-47 locale used by the default chunker for word segmentation
+   * (e.g. `vi` for Vietnamese). Ignored when a custom `segmenter` is provided.
+   */
+  locale?: string
   segmenter?: (tokens: ReadableStream<TextToken>, meta: { streamId: string, intentId: string, turnId?: string }) => ReadableStream<TextSegment>
 }
 
@@ -65,7 +70,8 @@ function createId(prefix: string) {
 export function createSpeechPipeline<TAudio>(options: SpeechPipelineOptions<TAudio>) {
   const logger = options.logger ?? console
   const priorityResolver = options.priority ?? createPriorityResolver()
-  const segmenter = options.segmenter ?? createTtsSegmentStream
+  const segmenter = options.segmenter
+    ?? ((tokens, meta) => createTtsSegmentStream(tokens, meta, { locale: options.locale }))
   const ttsMaxConcurrent = Math.max(1, options.ttsMaxConcurrent ?? 4)
   const context = createContext()
   const timeline = createTimeline()
