@@ -40,6 +40,7 @@ import { bindSpeakingStateToPlaybackManager } from '../../libs/speech/playback-s
 import { createStageTtsSession } from '../../libs/speech/tts-session'
 import { useAudioContext, useSpeakingStore } from '../../stores/audio'
 import { useBackgroundStore } from '../../stores/background'
+import { useCharacterStatesStore } from '../../stores/character-states'
 import { useChatOrchestratorStore } from '../../stores/chat'
 import { useImageViewControl } from '../../stores/image-view-control'
 import { useKeywordReactionsStore } from '../../stores/keyword-reactions'
@@ -189,7 +190,9 @@ const imageStageRef = ref<HTMLElement>()
 const imageStageRect = useElementBounding(imageStageRef)
 const { position: imagePosition, scale: imageScale } = useImageViewControl()
 const keywordReactionsStore = useKeywordReactionsStore()
+const characterStatesStore = useCharacterStatesStore()
 const { activeReaction } = storeToRefs(keywordReactionsStore)
+const { activeState } = storeToRefs(characterStatesStore)
 const imageTransformStyle = computed(() => {
   const x = (imagePosition.value.x / 100) * imageStageRect.width.value
   const y = -(imagePosition.value.y / 100) * imageStageRect.height.value
@@ -1211,6 +1214,7 @@ defineExpose({
         class="relative h-full w-full flex-1"
       >
         <img
+          v-if="!activeState"
           :src="stageModelSelectedUrl"
           :style="{ ...imageTransformStyle, animationPlayState: paused ? 'paused' : 'running' }"
           class="stage-image-idle absolute left-1/2 top-1/2 max-h-full max-w-full object-contain"
@@ -1218,6 +1222,16 @@ defineExpose({
           draggable="false"
           @load="onCharacterImageLoad"
           @error="componentState = 'mounted'"
+          @click="onCharacterImageClick"
+        >
+        <img
+          v-if="activeState"
+          :src="activeState.url"
+          :style="{ ...imageTransformStyle, animationPlayState: paused ? 'paused' : 'running' }"
+          class="stage-image-idle absolute left-1/2 top-1/2 max-h-full max-w-full object-contain"
+          alt=""
+          draggable="false"
+          @error="characterStatesStore.reset()"
           @click="onCharacterImageClick"
         >
         <video
