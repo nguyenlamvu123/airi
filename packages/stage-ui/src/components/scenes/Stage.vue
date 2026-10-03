@@ -193,6 +193,80 @@ const imageTransformStyle = computed(() => {
   return { transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${imageScale.value})` }
 })
 
+interface HeartParticle {
+  id: number
+  x: number
+  y: number
+  drift: number
+  size: number
+  rotation: number
+  delay: number
+  duration: number
+}
+
+interface SwirlParticle {
+  id: number
+  x: number
+  y: number
+}
+
+// Touch feedback for the static character: small hearts burst upward from the
+// click point while a light swirl spins in place and collapses back, so the dot
+// reads as "poked, then returned to normal". Pure DOM/CSS overlay, no capture.
+const heartParticles = ref<HeartParticle[]>([])
+const swirlParticles = ref<SwirlParticle[]>([])
+let touchEffectId = 0
+const touchHeartCount = 7
+
+function onCharacterImageClick(event: MouseEvent) {
+  const stage = imageStageRef.value
+  const image = event.currentTarget as HTMLImageElement
+  if (!stage || !image)
+    return
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+    return
+
+  // offsetX/Y stay valid in the image's own (untransformed) coordinate space
+  // even though the img carries a translate/scale view-control transform, so
+  // map the click point into the wrapper's coordinate space with the rect gaps.
+  const stageRect = stage.getBoundingClientRect()
+  const imageRect = image.getBoundingClientRect()
+  const x = event.offsetX + (imageRect.left - stageRect.left)
+  const y = event.offsetY + (imageRect.top - stageRect.top)
+
+  spawnTouchSwirl(x, y)
+  spawnTouchHearts(x, y)
+}
+
+function spawnTouchSwirl(x: number, y: number) {
+  const id = ++touchEffectId
+  swirlParticles.value.push({ id, x, y })
+  window.setTimeout(() => {
+    swirlParticles.value = swirlParticles.value.filter(p => p.id !== id)
+  }, 700)
+}
+
+function spawnTouchHearts(x: number, y: number) {
+  for (let i = 0; i < touchHeartCount; i++) {
+    const id = ++touchEffectId
+    const delay = Math.random() * 120
+    const duration = 950 + Math.random() * 550
+    heartParticles.value.push({
+      id,
+      x: x + (Math.random() - 0.5) * 24,
+      y: y + (Math.random() - 0.5) * 18,
+      drift: (Math.random() - 0.5) * 72,
+      size: 9 + Math.random() * 8,
+      rotation: (Math.random() - 0.5) * 60,
+      delay,
+      duration,
+    })
+    window.setTimeout(() => {
+      heartParticles.value = heartParticles.value.filter(p => p.id !== id)
+    }, delay + duration + 60)
+  }
+}
+
 const emotionsQueue = createQueue<EmotionPayload>({
   handlers: [
     async (ctx) => {
@@ -1141,7 +1215,28 @@ defineExpose({
           draggable="false"
           @load="onCharacterImageLoad"
           @error="componentState = 'mounted'"
+          @click="onCharacterImageClick"
         >
+        <span
+          v-for="heart in heartParticles"
+          :key="heart.id"
+          class="stage-touch-heart pointer-events-none absolute select-none"
+          :style="{
+            'left': `${heart.x}px`,
+            'top': `${heart.y}px`,
+            '--heart-drift': `${heart.drift}px`,
+            '--heart-size': `${heart.size}px`,
+            '--heart-rotation': `${heart.rotation}deg`,
+            '--heart-delay': `${heart.delay}ms`,
+            '--heart-duration': `${heart.duration}ms`,
+          }"
+        >♥</span>
+        <span
+          v-for="swirl in swirlParticles"
+          :key="swirl.id"
+          class="stage-touch-swirl pointer-events-none absolute"
+          :style="{ left: `${swirl.x}px`, top: `${swirl.y}px` }"
+        />
       </div>
       <div
         v-if="stageModelRenderer === 'godot'"
@@ -1198,6 +1293,57 @@ defineExpose({
 @media (prefers-reduced-motion: reduce) {
   .stage-image-idle {
     animation: none;
+  }
+}
+
+.stage-touch-heart {
+  color: #ff6f91;
+  font-size: var(--heart-size);
+  line-height: 1;
+  animation: stage-heart-float var(--heart-duration) ease-out var(--heart-delay) forwards;
+  text-shadow: 0 2px 10px rgb(255 111 145 / 0.45);
+}
+
+@keyframes stage-heart-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform:
+      translate(calc(-50% + var(--heart-drift)), calc(-50% - 110px))
+      scale(1)
+      rotate(var(--heart-rotation));
+  }
+}
+
+.stage-touch-swirl {
+  width: 28px;
+  height: 28px;
+  margin: -14px;
+  border: 2px solid rgb(255 111 145 / 0.65);
+  border-top-color: transparent;
+  border-right-color: rgb(255 111 145 / 0.25);
+  border-radius: 50%;
+  animation: stage-touch-swirl-spin 620ms ease-out forwards;
+}
+
+@keyframes stage-touch-swirl-spin {
+  0% {
+    transform: scale(0.3) rotate(0deg);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(1.25) rotate(170deg);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(0) rotate(340deg);
+    opacity: 0;
   }
 }
 </style>
