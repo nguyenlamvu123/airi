@@ -7,6 +7,7 @@ import { ChatSessionsDrawer } from '@proj-airi/stage-ui/components/scenarios/cha
 import { HearingConfig } from '@proj-airi/stage-ui/components/scenarios/dialogs/audio-input/index'
 import { useAudioAnalyzer } from '@proj-airi/stage-ui/composables'
 import { useAudioContext } from '@proj-airi/stage-ui/stores/audio'
+import { useCharacterStatesStore } from '@proj-airi/stage-ui/stores/character-states'
 import { useChatOrchestratorStore } from '@proj-airi/stage-ui/stores/chat'
 import { useChatSessionStore } from '@proj-airi/stage-ui/stores/chat/session-store'
 import { useKeywordReactionsStore } from '@proj-airi/stage-ui/stores/keyword-reactions'
@@ -45,6 +46,7 @@ const { enabled, stream } = storeToRefs(useSettingsAudioDevice())
 const chatOrchestrator = useChatOrchestratorStore()
 const chatSession = useChatSessionStore()
 const keywordReactionsStore = useKeywordReactionsStore()
+const characterStatesStore = useCharacterStatesStore()
 const { ingest, onAfterMessageComposed } = chatOrchestrator
 const { messages } = storeToRefs(chatSession)
 const { audioContext } = useAudioContext()
@@ -74,6 +76,9 @@ async function handleSend() {
 
   // Fire the keyword reaction early so the avatar reacts while the reply is streamed.
   void keywordReactionsStore.triggerForText(textToSend)
+  // Persistent character state (e.g. "đưa tay lên") takes over the avatar image
+  // until another state keyword or the default keyword resets it.
+  void characterStatesStore.triggerForText(textToSend)
 
   try {
     const providerConfig = providersStore.getProviderConfig(activeProvider.value)
