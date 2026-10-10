@@ -32,6 +32,17 @@ docs:
   'logging-in': Đang đăng nhập...
   'account': Tài khoản
   'logout': Đăng xuất
+'file-browser':
+  'title': Duyệt file
+  'home': Trang chủ
+  'up': Lên trên
+  'back': Quay lại
+  'reload': Làm mới
+  'close': Đóng
+  'loading': Đang tải…
+  'empty': Không có file hay thư mục nào.
+  'error': Không mở được thư mục này.
+
 widgets:
   close: Đóng tiện ích
   empty:

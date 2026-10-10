@@ -24,6 +24,7 @@ import { WidgetStage } from '@proj-airi/stage-ui/components/scenes'
 import { useVoiceInputSession } from '@proj-airi/stage-ui/composables'
 import { useCanvasPixelIsTransparentAtPoint } from '@proj-airi/stage-ui/composables/canvas-alpha'
 import { useSpeakingStore } from '@proj-airi/stage-ui/stores/audio'
+import { useChatOrchestratorStore } from '@proj-airi/stage-ui/stores/chat'
 import { useHearingSpeechInputPipeline, useHearingStore } from '@proj-airi/stage-ui/stores/modules/hearing'
 import { useOnboardingStore } from '@proj-airi/stage-ui/stores/onboarding'
 import { useSettings, useSettingsAudioDevice } from '@proj-airi/stage-ui/stores/settings'
@@ -33,13 +34,16 @@ import { computed, onMounted, onUnmounted, ref, shallowRef, toRef, watch } from 
 import { toast } from 'vue-sonner'
 
 import ControlsIsland from '../components/stage-islands/controls-island/index.vue'
+import FileBrowserPanel from '../components/stage-islands/file-browser-panel/index.vue'
 import ResourceStatusIsland from '../components/stage-islands/resource-status-island/index.vue'
 import StatusIsland from '../components/stage-islands/status-island/index.vue'
 
 import { electronOpenOnboarding } from '../../shared/eventa'
 import { modelSettingsRuntimeSnapshotChannelName } from '../../shared/model-settings-runtime'
+import { matchFileBrowserCommand } from '../libs/file-browser-core'
 import { useChatSyncStore } from '../stores/chat-sync'
 import { useControlsIslandStore } from '../stores/controls-island'
+import { useFileBrowserStore } from '../stores/file-browser'
 import { useStageWindowLifecycleStore } from '../stores/stage-window-lifecycle'
 import { shouldSampleStageTransparency } from '../utils/stage-three-transparency'
 import { createVoiceInputInteractionLifecycle } from '../utils/voice-input-lifecycle'
@@ -144,6 +148,8 @@ const { pause, resume } = watch(isTransparent, (transparent) => {
 }, { immediate: true })
 
 const hearingDialogOpen = computed(() => controlsIslandRef.value?.hearingDialogOpen ?? false)
+const fileBrowserStore = useFileBrowserStore()
+const { isOpen: fileBrowserOpen } = storeToRefs(fileBrowserStore)
 
 const modelSettingsRuntimeSnapshot = computed<ModelSettingsRuntimeSnapshot>(() => {
   const hasModel = !!stageModelSelectedUrl.value
@@ -222,7 +228,7 @@ const modelSettingsRuntimeSnapshot = computed<ModelSettingsRuntimeSnapshot>(() =
   })
 })
 
-watch([isOutsideFor250Ms, isOutsideStatusIslandFor250Ms, isAroundWindowBorderFor250Ms, isOutsideWindow, isTransparent, hearingDialogOpen, fadeOnHoverEnabled, stagePaused], () => {
+watch([isOutsideFor250Ms, isOutsideStatusIslandFor250Ms, isAroundWindowBorderFor250Ms, isOutsideWindow, isTransparent, hearingDialogOpen, fileBrowserOpen, fadeOnHoverEnabled, stagePaused], () => {
   if (stagePaused.value) {
     isIgnoringMouseEvents.value = false
     shouldFadeOnCursorWithin.value = false
@@ -231,8 +237,8 @@ watch([isOutsideFor250Ms, isOutsideStatusIslandFor250Ms, isAroundWindowBorderFor
     return
   }
 
-  if (hearingDialogOpen.value) {
-    // Hearing dialog/drawer is open; keep window interactive
+  if (hearingDialogOpen.value || fileBrowserOpen.value) {
+    // A dialog/drawer is open; keep window interactive
     isIgnoringMouseEvents.value = false
     shouldFadeOnCursorWithin.value = false
     setIgnoreMouseEvents([false, { forward: true }])
@@ -297,6 +303,7 @@ const hearingPipeline = useHearingSpeechInputPipeline()
 const { transcribeForMediaStream, stopStreamingTranscription } = hearingPipeline
 const { error: transcriptionError, supportsStreamInput } = storeToRefs(hearingPipeline)
 const chatSyncStore = useChatSyncStore()
+const chatOrchestrator = useChatOrchestratorStore()
 const streamingTranscriptionUnavailable = ref(false)
 const shouldUseStreamInput = computed(() => supportsStreamInput.value && !!stream.value && !streamingTranscriptionUnavailable.value)
 const voiceTranscriptBuffer = createTranscriptBuffer({
@@ -641,13 +648,25 @@ watch(nowSpeaking, async (speaking) => {
   scheduleAssistantSpeechResume()
 })
 
+let unsubscribeFileBrowserCommand: (() => void) | undefined
+
 onMounted(() => {
   if (onboardingStore.needsOnboarding) {
     openOnboarding()
   }
+
+  // Builtin file browser: a literal "duyệt file" message opens the panel.
+  // Hooked into the authority orchestrator so messages sent from the chat or
+  // spotlight windows (routed through chat-sync) land here too.
+  unsubscribeFileBrowserCommand = chatOrchestrator.onBeforeMessageComposed(async (message) => {
+    if (matchFileBrowserCommand(message)) {
+      await fileBrowserStore.openBrowser()
+    }
+  })
 })
 
 onUnmounted(() => {
+  unsubscribeFileBrowserCommand?.()
   postModelSettingsRuntimeEvent({
     type: 'owner-gone',
     ownerInstanceId: modelSettingsRuntimeOwnerInstanceId,
@@ -719,6 +738,7 @@ const cursorPosition = computed(() => ({
         />
         <HoloCoupon />
         <ControlsIsland ref="controlsIslandRef" />
+        <FileBrowserPanel />
       </div>
     </div>
     <!-- Loading overlay sits on top, does not hide the stage -->

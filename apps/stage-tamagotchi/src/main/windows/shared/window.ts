@@ -2,19 +2,27 @@ import type { createContext } from '@moeru/eventa/adapters/electron/main'
 import type { ResizeDirection } from '@proj-airi/electron-eventa'
 import type { BrowserWindow, BrowserWindowConstructorOptions } from 'electron'
 
-import type { ElectronReadTextFileResult } from '../../../shared/eventa'
+import type {
+  ElectronDirectoryEntry,
+  ElectronListDirectoryResult,
+  ElectronOpenPathResult,
+  ElectronReadTextFileResult,
+} from '../../../shared/eventa'
 import type { I18n } from '../../libs/i18n'
 import type { ServerChannel } from '../../services/airi/channel-server'
 
 import { Buffer } from 'node:buffer'
-import { open } from 'node:fs/promises'
+import { open, readdir, stat } from 'node:fs/promises'
+import { homedir } from 'node:os'
+import { join } from 'node:path'
 
 import { defineInvokeHandler } from '@moeru/eventa'
+import { errorMessageFrom } from '@moeru/std'
 import { isRendererUnavailable } from '@proj-airi/electron-vueuse/main'
 import { shell } from 'electron'
 import { isMacOS } from 'std-env'
 
-import { electronReadTextFile } from '../../../shared/eventa'
+import { electronGetHomeDirectory, electronListDirectory, electronOpenPath, electronReadTextFile } from '../../../shared/eventa'
 import { createServerChannelService } from '../../services/airi/channel-server'
 import { createI18nService } from '../../services/airi/i18n'
 import { createAppService, createPowerMonitorService, createScreenService, createSystemPreferencesService, createWindowService } from '../../services/electron'
@@ -176,10 +184,86 @@ export async function setupBaseWindowElectronInvokes(params: {
       }
     }
     catch (error) {
-      return { ok: false, error: error instanceof Error ? error.message : String(error) }
+      return { ok: false, error: errorMessageFrom(error) ?? 'Unknown error' }
     }
     finally {
       await fileHandle.close()
+    }
+  })
+
+  // Builtin file browser: resolve $HOME so the renderer can open there on demand.
+  defineInvokeHandler(params.context, electronGetHomeDirectory, async (): Promise<{ path: string }> => ({
+    path: homedir(),
+  }))
+
+  defineInvokeHandler(params.context, electronListDirectory, async ({ path }): Promise<ElectronListDirectoryResult> => {
+    try {
+      const dirents = await readdir(path, { withFileTypes: true })
+      const entries: ElectronDirectoryEntry[] = []
+
+      for (const dirent of dirents) {
+        if (dirent.name.startsWith('.'))
+          continue
+
+        const entryPath = join(path, dirent.name)
+
+        if (dirent.isDirectory()) {
+          entries.push({ name: dirent.name, path: entryPath, kind: 'directory' })
+          continue
+        }
+
+        if (dirent.isFile()) {
+          let size: number | undefined
+          try {
+            size = (await stat(entryPath)).size
+          }
+          catch {
+            size = undefined
+          }
+          entries.push({ name: dirent.name, path: entryPath, kind: 'file', size })
+          continue
+        }
+
+        if (dirent.isSymbolicLink()) {
+          // Resolve symlinks so users can navigate symlinked folders instead of
+          // treating them as opaque entries that cannot be opened.
+          try {
+            const stats = await stat(entryPath)
+            entries.push({
+              name: dirent.name,
+              path: entryPath,
+              kind: stats.isDirectory() ? 'directory' : 'file',
+              size: stats.isDirectory() ? undefined : stats.size,
+            })
+          }
+          catch {
+            entries.push({ name: dirent.name, path: entryPath, kind: 'file' })
+          }
+        }
+      }
+
+      entries.sort((a, b) => {
+        if (a.kind !== b.kind)
+          return a.kind === 'directory' ? -1 : 1
+        return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+      })
+
+      return { ok: true, path, entries }
+    }
+    catch (error) {
+      return { ok: false, error: errorMessageFrom(error) ?? 'Unknown error' }
+    }
+  })
+
+  defineInvokeHandler(params.context, electronOpenPath, async ({ path }): Promise<ElectronOpenPathResult> => {
+    try {
+      const openedWithError = await shell.openPath(path)
+      if (openedWithError)
+        return { ok: false, error: openedWithError }
+      return { ok: true }
+    }
+    catch (error) {
+      return { ok: false, error: errorMessageFrom(error) ?? 'Unknown error' }
     }
   })
 }
