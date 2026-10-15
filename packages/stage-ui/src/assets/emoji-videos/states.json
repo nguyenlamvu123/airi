@@ -1,5 +1,9 @@
 {
   "bình thường": "character.png",
   "đưa tay lên": "duatay.png",
-  "mặc cái váy xanh đi": "123.png"
+  "mặc cái váy xanh đi": "123.png",
+  "duyệt file": "@command:file-browser",
+  "duyet file": "@command:file-browser",
+  "duyệt web": "@command:web-search",
+  "duyet web": "@command:web-search"
 }

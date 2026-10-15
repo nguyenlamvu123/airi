@@ -49,6 +49,23 @@ describe('resolveCharacterState', () => {
     expect(options.resolveUrl).not.toHaveBeenCalled()
     expect(DEFAULT_STATE_FILENAME).toBe('character.png')
   })
+
+  it('ignores @command: entries so command keywords never act as avatar states', async () => {
+    const options = {
+      mapping: {
+        'duyệt file': '@command:file-browser',
+        'đưa tay lên': 'duatay.png',
+      },
+      resolveUrl: vi.fn(async (filename: string) => `https://assets.local/${filename}`),
+    }
+
+    await expect(resolveCharacterState('duyệt file', options)).resolves.toBeUndefined()
+    expect(options.resolveUrl).not.toHaveBeenCalled()
+    await expect(resolveCharacterState('đưa tay lên', options)).resolves.toMatchObject({
+      kind: 'set',
+      media: { filename: 'duatay.png' },
+    })
+  })
 })
 
 describe('useCharacterStatesStore', () => {

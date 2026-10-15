@@ -277,7 +277,7 @@ export async function setupBaseWindowElectronInvokes(params: {
     }
   })
 
-  // Builtin web search: DuckDuckGo Instant Answer behind the "tìm kiếm:" keyword.
+  // Builtin web search: DuckDuckGo Instant Answer behind the "duyệt web" keyword.
   defineInvokeHandler(params.context, electronSearchWeb, async ({ query }): Promise<WebSearchResultsResult> => {
     const trimmed = query.trim()
     if (!trimmed)

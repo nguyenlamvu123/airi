@@ -1,14 +1,15 @@
-const FILE_BROWSER_KEYWORDS = ['duyệt file', 'duyet file']
+import { findCommandKeywords } from '@proj-airi/stage-ui/stores/command-keywords'
 
 /**
  * Decides whether a sent chat message should open the builtin file browser.
  *
- * Matching mirrors the chat keyword matcher (trim + lowercase) so typing
- * "duyệt file" (with or without diacritics) opens the browser from $HOME.
+ * Keywords come from `states.json` (the `@command:file-browser` entries), so the
+ * trigger can be renamed there. Matching mirrors the chat keyword matcher
+ * (trim + lowercase); the whole message must equal one keyword.
  */
-export function matchFileBrowserCommand(message: string): boolean {
+export function matchFileBrowserCommand(message: string, keywords: string[] = findCommandKeywords('file-browser')): boolean {
   const normalized = message.trim().toLowerCase()
-  return FILE_BROWSER_KEYWORDS.includes(normalized)
+  return keywords.some(keyword => keyword.toLowerCase() === normalized)
 }
 
 /**

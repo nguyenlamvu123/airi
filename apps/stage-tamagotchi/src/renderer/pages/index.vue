@@ -662,7 +662,8 @@ onMounted(() => {
   }
 
   // Builtin chat commands: literal "duyệt file" opens the file browser, while
-  // "tìm kiếm: <query>" runs a web search. Hooked into the authority
+  // "duyệt web: <query>" runs a web search. Both triggers live in states.json
+  // (@command: entries) so users can rename them. Hooked into the authority
   // orchestrator so messages sent from the chat or spotlight windows (routed
   // through chat-sync) land here too.
   unsubscribeChatCommands = chatOrchestrator.onBeforeMessageComposed(async (message) => {
