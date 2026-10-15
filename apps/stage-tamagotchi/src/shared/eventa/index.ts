@@ -368,6 +368,21 @@ export const electronListDirectory = defineInvokeEventa<ElectronListDirectoryRes
 export type ElectronOpenPathResult = { ok: true } | { ok: false, error: string }
 export const electronOpenPath = defineInvokeEventa<ElectronOpenPathResult, { path: string }>('eventa:invoke:electron:fs:open-path')
 
+// Builtin web search: AIRI answers "tìm kiếm: <query>" with DuckDuckGo results
+// shown in the pet window and opened externally via the default browser.
+export interface WebSearchResult {
+  title: string
+  url: string
+  snippet: string
+}
+export type WebSearchResultsResult
+  = | { ok: true, query: string, results: WebSearchResult[] }
+    | { ok: false, error: string }
+export const electronSearchWeb = defineInvokeEventa<WebSearchResultsResult, { query: string }>('eventa:invoke:electron:web:search')
+
+export type ElectronOpenExternalUrlResult = { ok: true } | { ok: false, error: string }
+export const electronOpenExternalUrl = defineInvokeEventa<ElectronOpenExternalUrlResult, { url: string }>('eventa:invoke:electron:web:open-external-url')
+
 export const electronWindowClose = defineInvokeEventa<void>('eventa:invoke:electron:window:close')
 export type ElectronWindowLifecycleReason
   = | 'initial'

@@ -42,6 +42,11 @@ docs:
   'loading': Đang tải…
   'empty': Không có file hay thư mục nào.
   'error': Không mở được thư mục này.
+'web-search':
+  'title': Tìm kiếm web
+  'close': Đóng
+  'loading': Đang tìm kiếm…
+  'empty': Không tìm thấy kết quả.
 
 widgets:
   close: Đóng tiện ích
