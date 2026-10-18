@@ -27,7 +27,6 @@ export type ChatActivationFailureStage = 'provider_config' | 'model_list' | 'mes
 export type ProviderConfigStep = 'settings_auto_validate' | 'manual_chat_ping' | 'onboarding_validate'
 export type VoiceType = 'official_default' | 'official_selected' | 'custom_configured' | 'voice_pack' | 'unknown'
 export type VoiceAnalyticsSource = 'settings' | 'onboarding' | 'chat_auto_tts' | 'manual_preview'
-export type OfficialProviderSelectionSource = 'settings' | 'onboarding' | 'default_auto'
 export type OfficialTtsExposureSource = 'settings' | 'onboarding' | 'post_first_chat' | 'chat_controls'
 export type FluxBalanceBucket = 'zero' | '1_100' | '101_1000' | '1001_10000' | '10000_plus' | 'unknown'
 export type FeedbackSource = 'app' | 'discord' | 'qq' | 'github' | 'email' | 'other'
@@ -501,21 +500,6 @@ export function useAnalytics() {
     if (!canCapture())
       return
     posthog.capture('chat_activation_failed', {
-      ...properties,
-      app_surface: getConversationAnalyticsSurface(),
-    })
-  }
-
-  function trackOfficialProviderSelected(properties: {
-    provider_id: string
-    provider_mode: ProviderMode
-    source: OfficialProviderSelectionSource
-    auto_selected: boolean
-    model_id?: string
-  }) {
-    if (!canCapture())
-      return
-    posthog.capture('official_provider_selected', {
       ...properties,
       app_surface: getConversationAnalyticsSurface(),
     })
@@ -1295,7 +1279,6 @@ export function useAnalytics() {
     trackChatActivationStarted,
     trackChatActivationSucceeded,
     trackChatActivationFailed,
-    trackOfficialProviderSelected,
     trackSecondTurnStarted,
     trackModelListLoaded,
     trackModelListFailed,

@@ -77,7 +77,6 @@ const providerSourceMetadataById = {
   'n1n': paidCloud,
   'novita-ai': paidCloud,
   'nvidia': paidCloud,
-  'official-provider': recommendedPaidCloud,
   'official-provider-speech': recommendedPaidCloud,
   'official-provider-speech-streaming': recommendedPaidCloud,
   'ollama': freeLocal,

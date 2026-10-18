@@ -32,10 +32,6 @@ export function withCredentials() {
   }
 }
 
-export function createOfficialOpenAIProvider() {
-  return createOpenAI('', `${SERVER_URL}/api/v1/openai/`)
-}
-
 /**
  * Provider scoped to the audio surface (`/api/v1/audio/`). The OpenAI helper
  * (`createOpenAI`) builds upstream URLs as `<baseURL><resource>`, where

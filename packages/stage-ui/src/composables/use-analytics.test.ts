@@ -343,21 +343,9 @@ describe('useAnalytics conversation product events', () => {
     })
   })
 
-  /**
-   * @example
-   * analytics.trackOfficialProviderSelected({ provider_id: 'official-provider', provider_mode: 'official', source: 'default_auto', auto_selected: true })
-   * expect(posthog.capture).toHaveBeenCalledWith('official_provider_selected', expect.objectContaining({ auto_selected: true }))
-   */
-  it('emits official provider and second-turn operating events with bounded fields', () => {
+  it('emits the second-turn operating event with bounded fields', () => {
     const analytics = useAnalytics()
 
-    analytics.trackOfficialProviderSelected({
-      provider_id: 'official-provider',
-      provider_mode: 'official',
-      source: 'default_auto',
-      auto_selected: true,
-      model_id: 'chat-auto',
-    })
     analytics.trackSecondTurnStarted({
       conversation_id: 'session-1',
       provider_id: 'official-provider',
@@ -368,15 +356,7 @@ describe('useAnalytics conversation product events', () => {
       turn_index: 2,
     })
 
-    expect(analyticsMocks.posthogCaptureMock).toHaveBeenNthCalledWith(1, 'official_provider_selected', {
-      app_surface: 'web',
-      provider_id: 'official-provider',
-      provider_mode: 'official',
-      source: 'default_auto',
-      auto_selected: true,
-      model_id: 'chat-auto',
-    })
-    expect(analyticsMocks.posthogCaptureMock).toHaveBeenNthCalledWith(2, 'second_turn_started', {
+    expect(analyticsMocks.posthogCaptureMock).toHaveBeenNthCalledWith(1, 'second_turn_started', {
       app_surface: 'web',
       conversation_id: 'session-1',
       provider_id: 'official-provider',

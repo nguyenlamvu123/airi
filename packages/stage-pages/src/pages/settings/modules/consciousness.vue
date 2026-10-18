@@ -25,34 +25,14 @@ const {
 } = storeToRefs(consciousnessStore)
 
 const { t } = useI18n()
-const { trackOfficialProviderSelected, trackProviderClick } = useAnalytics()
+const { trackProviderClick } = useAnalytics()
 
-/**
- * Tracks explicit official chat-provider selection from settings.
- */
-function trackOfficialProviderSelection(providerId: string, modelId: string) {
-  if (!providerId.startsWith('official-provider'))
-    return
-
-  trackOfficialProviderSelected({
-    provider_id: providerId,
-    provider_mode: 'official',
-    source: 'settings',
-    auto_selected: false,
-    model_id: modelId || 'unknown',
-  })
-}
-
-watch(activeProvider, async (provider, oldProvider) => {
+watch(activeProvider, async (provider) => {
   if (!provider)
     return
 
   // The consciousness store clears the model selection on provider changes;
-  // the page only tracks the selection and loads the new provider's catalog.
-  if (oldProvider !== undefined && oldProvider !== provider) {
-    trackOfficialProviderSelection(provider, activeModel.value)
-  }
-
+  // the page only loads the new provider's catalog.
   await consciousnessStore.loadModelsForProvider(provider)
 }, { immediate: true })
 
@@ -108,7 +88,7 @@ function handleDeleteProvider(providerId: string) {
               :description="metadata.localizedDescription"
               @click="trackProviderClick(metadata.id, 'consciousness')"
             >
-              <template v-if="!metadata.id.startsWith('official-provider')" #topRight>
+              <template #topRight>
                 <button
                   type="button"
                   class="rounded bg-neutral-100 p-1 text-neutral-600 transition-colors dark:bg-neutral-800/60 hover:bg-neutral-200 dark:text-neutral-300 dark:hover:bg-neutral-700/60"
