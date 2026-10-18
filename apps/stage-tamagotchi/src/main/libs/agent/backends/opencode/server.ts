@@ -3,34 +3,6 @@ import type { ChildProcess } from 'node:child_process'
 
 import { spawn } from 'node:child_process'
 
-import { startOpencodeProxy } from './openai-proxy'
-
-export interface OpencodeBridgeOptions {
-  /** Working directory opencode treats as the project root. */
-  directory: string
-  /** opencode executable name or absolute path. */
-  opencodePath?: string
-  /** Explicit port for the opencode server; `0`/omitted lets opencode choose. */
-  serverPort?: number
-  /** Explicit port for the OpenAI proxy; `0`/omitted lets the OS choose. */
-  proxyPort?: number
-  host?: string
-  title?: string
-}
-
-export interface OpencodeBridge {
-  /** OpenAI-compatible base URL (`http://127.0.0.1:<port>/v1`) for AIRI's provider. */
-  proxyBaseUrl: string
-  /** Base URL of the underlying opencode server. */
-  serverBaseUrl: string
-  close: () => Promise<void>
-}
-
-const SERVER_START_TIMEOUT_MS = 30_000
-
-/** Matches the `opencode server listening on http://host:port` startup line. */
-const LISTENING_PATTERN = /listening on (https?:\/\/\S+)/
-
 /**
  * Spawns `opencode serve` and resolves with its HTTP base URL once the server
  * reports that it is listening.
@@ -40,7 +12,27 @@ const LISTENING_PATTERN = /listening on (https?:\/\/\S+)/
  * by the returned `close`; on spawn failure (e.g. opencode not installed) the
  * promise rejects with the underlying error.
  */
-export function startOpencodeServer(options: OpencodeBridgeOptions): Promise<{ baseUrl: string, close: () => Promise<void> }> {
+export interface OpencodeServerOptions {
+  /** Working directory opencode treats as the project root. */
+  directory: string
+  /** opencode executable name or absolute path. */
+  opencodePath?: string
+  /** Explicit port for the opencode server; `0`/omitted lets opencode choose. */
+  serverPort?: number
+  host?: string
+}
+
+export interface OpencodeServer {
+  baseUrl: string
+  close: () => Promise<void>
+}
+
+const SERVER_START_TIMEOUT_MS = 30_000
+
+/** Matches the `opencode server listening on http://host:port` startup line. */
+const LISTENING_PATTERN = /listening on (https?:\/\/\S+)/
+
+export function startOpencodeServer(options: OpencodeServerOptions): Promise<OpencodeServer> {
   const host = options.host ?? '127.0.0.1'
   const path = options.opencodePath?.trim() || 'opencode'
   const args = ['serve', '--hostname', host]
@@ -130,38 +122,4 @@ function stopChild(child: ChildProcess): Promise<void> {
     })
     child.kill('SIGTERM')
   })
-}
-
-/**
- * Starts the full opencode chat backend: a local `opencode serve` process plus
- * an OpenAI-compatible proxy in front of it.
- *
- * Callers only need the returned `proxyBaseUrl`, which plugs into AIRI's
- * OpenAI-compatible chat provider. `close` tears both layers down in order.
- */
-export async function startOpencodeBridge(options: OpencodeBridgeOptions): Promise<OpencodeBridge> {
-  const server = await startOpencodeServer(options)
-
-  let proxy
-  try {
-    proxy = await startOpencodeProxy({
-      opencodeBaseUrl: server.baseUrl,
-      host: options.host,
-      port: options.proxyPort,
-      title: options.title,
-    })
-  }
-  catch (error) {
-    await server.close()
-    throw error
-  }
-
-  return {
-    proxyBaseUrl: proxy.baseUrl,
-    serverBaseUrl: server.baseUrl,
-    async close() {
-      await proxy.close()
-      await server.close()
-    },
-  }
 }

@@ -52,8 +52,8 @@ import {
 import { electronPluginToolsChanged } from '../shared/eventa/plugin/tools'
 import { initializeElectronAuthCallbackBridge } from './bridges/electron-auth-callback'
 import { initializeStageThreeRuntimeTraceBridge } from './bridges/stage-three-runtime-trace'
+import { useAgentBackend } from './composables/use-agent-backend'
 import { useLanguage } from './composables/use-language'
-import { useOpencodeBackend } from './composables/use-opencode-backend'
 import { createChatSyncWindowLifecycle, resolveInitialChatSyncRoutePath } from './stores/chat-sync-lifecycle'
 import { useTamagotchiMcpToolsStore } from './stores/mcp-tools'
 import { useTamagotchiPluginToolsStore } from './stores/plugin-tools'
@@ -77,9 +77,10 @@ const isSettingsWindowRoute = initialWindowRoutePath.startsWith('/settings')
 if (!isSpotlightWindowRoute)
   useAuthProviderSync()
 
-// Local opencode chat backend: spawns `opencode serve` and points the
-// `opencode` provider at it. Only the full stage runtime windows need it.
-const opencodeBackend = isSpotlightWindowRoute ? null : useOpencodeBackend()
+// Local agent chat backend: starts the chosen backend (opencode/Claude Code)
+// and points its provider at the resulting proxy. Only full stage runtime
+// windows need it.
+const agentBackend = isSpotlightWindowRoute ? null : useAgentBackend()
 
 function createFullStageRuntime() {
   const contextBridgeStore = useContextBridgeStore()
@@ -293,7 +294,7 @@ onMounted(async () => {
 
   await chatSessionStore.initialize()
 
-  void opencodeBackend?.initialize()
+  void agentBackend?.initialize()
 
   await fullStageRuntime?.initialize()
 })

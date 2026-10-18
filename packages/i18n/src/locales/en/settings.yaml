@@ -1365,6 +1365,9 @@ pages:
       opencode:
         description: Local opencode agent session as the chat backend.
         title: OpenCode
+      claude-code:
+        description: Local Claude Code agent session as the chat backend.
+        title: Claude Code
       nvidia:
         description: build.nvidia.com
         title: NVIDIA NIM

@@ -1,4 +1,4 @@
-import type { OpencodeStreamEvent } from './stream-state'
+import type { OpencodeStreamEvent } from './events'
 
 /**
  * Permission ruleset entry. `permission` and `pattern` are opencode-internal
@@ -17,6 +17,7 @@ export interface OpencodeMessageResult {
 }
 
 export interface OpencodeClient {
+  listSessions: () => Promise<Array<{ id: string }>>
   createSession: (options?: { title?: string, permission?: OpencodePermissionRule[] }) => Promise<{ id: string }>
   /** Sends a user prompt and resolves once the whole assistant turn completes. */
   prompt: (sessionID: string, text: string) => Promise<OpencodeMessageResult>
@@ -34,14 +35,21 @@ async function assertOk(response: Response, context: string): Promise<void> {
 /**
  * Thin HTTP client over a running `opencode serve` instance.
  *
- * Only the endpoints AIRI uses are wrapped: create a session, send one prompt,
- * and subscribe to the global event stream. All paths are relative to the
- * server `baseUrl` (e.g. `http://127.0.0.1:4097`).
+ * Only the endpoints AIRI uses are wrapped: list/create sessions, send one
+ * prompt, and subscribe to the global event stream. All paths are relative to
+ * the server `baseUrl` (e.g. `http://127.0.0.1:4097`).
  */
 export function createOpencodeClient(baseUrl: string): OpencodeClient {
   const root = baseUrl.replace(/\/+$/, '')
 
   return {
+    async listSessions() {
+      const response = await fetch(`${root}/session`)
+      await assertOk(response, 'opencode session.list')
+      const sessions = await response.json() as Array<{ id: string }>
+      return sessions
+    },
+
     async createSession(options) {
       const response = await fetch(`${root}/session`, {
         method: 'POST',
