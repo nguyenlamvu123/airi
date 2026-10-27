@@ -6,8 +6,6 @@ import { useAuthProviderSync } from './use-auth-provider-sync'
 const syncState = vi.hoisted(() => ({
   authenticatedHook: undefined as (() => Promise<void>) | undefined,
   logoutHook: undefined as (() => void) | undefined,
-  activeProvider: '',
-  activeModel: '',
   activeVisionProvider: '',
   activeVisionModel: '',
   activeSpeechProvider: 'speech-noop',
@@ -22,9 +20,7 @@ const syncMocks = vi.hoisted(() => ({
   setProviderUnconfigured: vi.fn(),
   setProviderAvailabilityOverride: vi.fn(),
   fetchModelsForProvider: vi.fn(async (_providerId: string): Promise<unknown[]> => []),
-  loadConsciousnessModels: vi.fn(async () => []),
   loadVisionModels: vi.fn(async () => []),
-  trackOfficialProviderSelected: vi.fn(),
 }))
 
 vi.mock('../libs/auth', () => ({
@@ -54,16 +50,6 @@ vi.mock('../stores/providers', () => ({
     setProviderUnconfigured: syncMocks.setProviderUnconfigured,
     setProviderAvailabilityOverride: syncMocks.setProviderAvailabilityOverride,
     fetchModelsForProvider: syncMocks.fetchModelsForProvider,
-  }),
-}))
-
-vi.mock('../stores/modules/consciousness', () => ({
-  useConsciousnessStore: () => ({
-    get activeProvider() { return syncState.activeProvider },
-    set activeProvider(value: string) { syncState.activeProvider = value },
-    get activeModel() { return syncState.activeModel },
-    set activeModel(value: string) { syncState.activeModel = value },
-    loadModelsForProvider: syncMocks.loadConsciousnessModels,
   }),
 }))
 
@@ -99,18 +85,10 @@ vi.mock('../stores/modules/hearing', () => ({
   }),
 }))
 
-vi.mock('./use-analytics', () => ({
-  useAnalytics: () => ({
-    trackOfficialProviderSelected: syncMocks.trackOfficialProviderSelected,
-  }),
-}))
-
 describe('useAuthProviderSync', () => {
   beforeEach(() => {
     syncState.authenticatedHook = undefined
     syncState.logoutHook = undefined
-    syncState.activeProvider = ''
-    syncState.activeModel = ''
     syncState.activeVisionProvider = ''
     syncState.activeVisionModel = ''
     syncState.activeSpeechProvider = 'speech-noop'
@@ -127,12 +105,9 @@ describe('useAuthProviderSync', () => {
 
     await syncState.authenticatedHook?.()
 
-    expect(syncMocks.forceProviderConfigured).toHaveBeenCalledWith('official-provider')
     expect(syncMocks.forceProviderConfigured).toHaveBeenCalledWith('vision-official-provider')
     expect(syncMocks.forceProviderConfigured).toHaveBeenCalledWith('official-provider-speech')
     expect(syncMocks.forceProviderConfigured).toHaveBeenCalledWith(OFFICIAL_TRANSCRIPTION_PROVIDER_ID)
-    expect(syncState.activeProvider).toBe('official-provider')
-    expect(syncState.activeModel).toBe('auto')
     expect(syncState.activeSpeechProvider).toBe('official-provider-speech')
     expect(syncState.activeTranscriptionProvider).toBe(OFFICIAL_TRANSCRIPTION_PROVIDER_ID)
   })
@@ -154,8 +129,9 @@ describe('useAuthProviderSync', () => {
     syncMocks.fetchModelsForProvider.mockResolvedValue([])
     await expect(syncState.authenticatedHook?.()).resolves.toBeUndefined()
 
-    expect(syncMocks.forceProviderConfigured).toHaveBeenCalledTimes(9)
-    expect(syncMocks.forceProviderConfigured.mock.calls.filter(([providerId]) => providerId === 'official-provider')).toHaveLength(2)
+    // Three auth-activated providers per run, plus the streaming TTS provider
+    // forced once on the successful second run.
+    expect(syncMocks.forceProviderConfigured).toHaveBeenCalledTimes(7)
     expect(syncMocks.forceProviderConfigured.mock.calls.filter(([providerId]) => providerId === 'official-provider-speech')).toHaveLength(2)
     expect(syncMocks.forceProviderConfigured.mock.calls.filter(([providerId]) => providerId === OFFICIAL_TRANSCRIPTION_PROVIDER_ID)).toHaveLength(2)
   })

@@ -1446,8 +1446,6 @@ pages:
         description: Browser-native STT (requires Chrome/Edge/Safari)
         title: Web Speech API
       official:
-        title: Official Provider
-        description: Official AI provider by AIRI.
         speech-title: Official Speech Provider
         speech-description: Official text-to-speech provider by AIRI.
         speech-streaming-title: Official Streaming Speech Provider

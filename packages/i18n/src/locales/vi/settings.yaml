@@ -1391,8 +1391,6 @@ pages:
         description: STT gốc trình duyệt (yêu cầu Chrome/Edge/Safari)
         title: Web Speech API
       official:
-        title: Nhà Cung Cấp Chính Thức
-        description: Nhà cung cấp AI chính thức bởi AIRI.
         speech-title: Official Speech Provider
         speech-description: Official text-to-speech provider by AIRI.
         speech-streaming-title: Nhà Cung Cấp Giọng Nói Thời Gian Thực (Streaming) Chính Thức

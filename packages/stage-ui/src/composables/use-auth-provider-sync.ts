@@ -3,19 +3,19 @@ import { nextTick } from 'vue'
 import { initializeAuth } from '../libs/auth'
 import { getStreamingTtsAvailable, OFFICIAL_TRANSCRIPTION_PROVIDER_ID } from '../libs/providers'
 import { useAuthStore } from '../stores/auth'
-import { useConsciousnessStore } from '../stores/modules/consciousness'
 import { useHearingStore } from '../stores/modules/hearing'
 import { useSpeechStore } from '../stores/modules/speech'
 import { useVisionStore } from '../stores/modules/vision'
 import { useProvidersStore } from '../stores/providers'
-import { useAnalytics } from './use-analytics'
 
 /**
  * Provider IDs to auto-activate on sign-in.
  * Edit this list to enable/disable official providers.
+ *
+ * The official chat (consciousness) provider was removed: AIRI now runs a local
+ * agent backend for chat, so sign-in no longer picks a default chat LLM.
  */
-const AUTH_ACTIVATED_PROVIDERS: Array<{ id: string, module: 'consciousness' | 'speech' | 'hearing' | 'vision' }> = [
-  { id: 'official-provider', module: 'consciousness' },
+const AUTH_ACTIVATED_PROVIDERS: Array<{ id: string, module: 'speech' | 'hearing' | 'vision' }> = [
   { id: 'vision-official-provider', module: 'vision' },
   { id: 'official-provider-speech', module: 'speech' },
   { id: OFFICIAL_TRANSCRIPTION_PROVIDER_ID, module: 'hearing' },
@@ -41,11 +41,9 @@ export function useAuthProviderSync() {
 
   const authStore = useAuthStore()
   const providersStore = useProvidersStore()
-  const consciousnessStore = useConsciousnessStore()
   const visionStore = useVisionStore()
   const speechStore = useSpeechStore()
   const hearingStore = useHearingStore()
-  const { trackOfficialProviderSelected } = useAnalytics()
 
   // Track the completed and in-flight work separately. Authentication can be
   // announced more than once while a catalog request is still pending; those
@@ -92,19 +90,6 @@ export function useAuthProviderSync() {
     // any provider for that module yet.
     for (const { id, module } of toActivate) {
       switch (module) {
-        case 'consciousness':
-          if (!consciousnessStore.activeProvider) {
-            consciousnessStore.activeProvider = id
-            consciousnessStore.activeModel = 'auto'
-            trackOfficialProviderSelected({
-              provider_id: id,
-              provider_mode: 'official',
-              source: 'default_auto',
-              auto_selected: true,
-              model_id: 'auto',
-            })
-          }
-          break
         case 'vision':
           if (!visionStore.activeProvider) {
             visionStore.activeProvider = id
@@ -130,11 +115,9 @@ export function useAuthProviderSync() {
     try {
       await Promise.all(
         toActivate.map(({ id, module }) =>
-          module === 'consciousness'
-            ? consciousnessStore.loadModelsForProvider(id)
-            : module === 'vision'
-              ? visionStore.loadModelsForProvider(id)
-              : providersStore.fetchModelsForProvider(id),
+          module === 'vision'
+            ? visionStore.loadModelsForProvider(id)
+            : providersStore.fetchModelsForProvider(id),
         ),
       )
     }
@@ -214,12 +197,6 @@ export function useAuthProviderSync() {
     // Reset active provider/model if they belong to an auth-activated provider
     for (const { id, module } of AUTH_ACTIVATED_PROVIDERS) {
       switch (module) {
-        case 'consciousness':
-          if (consciousnessStore.activeProvider === id) {
-            consciousnessStore.activeProvider = ''
-            consciousnessStore.activeModel = ''
-          }
-          break
         case 'vision':
           if (visionStore.activeProvider === id) {
             visionStore.activeProvider = ''

@@ -8,7 +8,7 @@ import { z } from 'zod'
 import { getAuthToken } from '../../../../libs/auth'
 import { SERVER_URL } from '../../../../libs/server'
 import { defineProvider } from '../registry'
-import { createOfficialAudioProvider, createOfficialOpenAIProvider, OFFICIAL_ICON, withCredentials } from './shared'
+import { createOfficialAudioProvider, OFFICIAL_ICON, withCredentials } from './shared'
 
 export const OFFICIAL_SPEECH_PROVIDER_ID = 'official-provider-speech'
 export const OFFICIAL_SPEECH_STREAMING_PROVIDER_ID = 'official-provider-speech-streaming'
@@ -61,43 +61,6 @@ function authHeaders(): Record<string, string> {
     headers.Authorization = `Bearer ${token}`
   return headers
 }
-
-export const providerOfficialChat = defineProvider({
-  id: 'official-provider',
-  order: -1,
-  name: 'Official Provider',
-  nameLocalize: ({ t }) => t('settings.pages.providers.provider.official.title'),
-  description: 'Official AI provider by AIRI.',
-  descriptionLocalize: ({ t }) => t('settings.pages.providers.provider.official.description'),
-  tasks: ['text-generation'],
-  icon: OFFICIAL_ICON,
-  requiresCredentials: false,
-
-  createProviderConfig: () => officialConfigSchema,
-  createProvider(_config) {
-    const provider = createOfficialOpenAIProvider()
-    const originalChat = provider.chat.bind(provider)
-    provider.chat = (model: string) => {
-      const result = originalChat(model)
-      result.fetch = withCredentials()
-      return result
-    }
-    return provider
-  },
-
-  validationRequiredWhen: () => false,
-
-  extraMethods: {
-    listModels: async () => [
-      {
-        id: 'auto',
-        name: 'Auto',
-        provider: 'official-provider',
-        description: 'Automatically routed by AI Gateway',
-      },
-    ],
-  },
-})
 
 export const providerOfficialSpeech = defineProvider({
   id: OFFICIAL_SPEECH_PROVIDER_ID,
