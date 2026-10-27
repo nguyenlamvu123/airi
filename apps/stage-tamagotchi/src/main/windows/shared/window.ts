@@ -5,8 +5,10 @@ import type { BrowserWindow, BrowserWindowConstructorOptions } from 'electron'
 import type {
   ElectronDirectoryEntry,
   ElectronListDirectoryResult,
+  ElectronOpenExternalUrlResult,
   ElectronOpenPathResult,
   ElectronReadTextFileResult,
+  WebSearchResultsResult,
 } from '../../../shared/eventa'
 import type { I18n } from '../../libs/i18n'
 import type { ServerChannel } from '../../services/airi/channel-server'
@@ -22,7 +24,15 @@ import { isRendererUnavailable } from '@proj-airi/electron-vueuse/main'
 import { shell } from 'electron'
 import { isMacOS } from 'std-env'
 
-import { electronGetHomeDirectory, electronListDirectory, electronOpenPath, electronReadTextFile } from '../../../shared/eventa'
+import {
+  electronGetHomeDirectory,
+  electronListDirectory,
+  electronOpenExternalUrl,
+  electronOpenPath,
+  electronReadTextFile,
+  electronSearchWeb,
+} from '../../../shared/eventa'
+import { fetchDuckDuckGoResults } from '../../libs/duckduckgo'
 import { createServerChannelService } from '../../services/airi/channel-server'
 import { createI18nService } from '../../services/airi/i18n'
 import { createAppService, createPowerMonitorService, createScreenService, createSystemPreferencesService, createWindowService } from '../../services/electron'
@@ -264,6 +274,31 @@ export async function setupBaseWindowElectronInvokes(params: {
     }
     catch (error) {
       return { ok: false, error: errorMessageFrom(error) ?? 'Unknown error' }
+    }
+  })
+
+  // Builtin web search: DuckDuckGo Instant Answer behind the "tìm kiếm:" keyword.
+  defineInvokeHandler(params.context, electronSearchWeb, async ({ query }): Promise<WebSearchResultsResult> => {
+    const trimmed = query.trim()
+    if (!trimmed)
+      return { ok: false, error: 'Search query is empty' }
+    try {
+      const results = await fetchDuckDuckGoResults(trimmed)
+      return { ok: true, query: trimmed, results }
+    }
+    catch (error) {
+      return { ok: false, error: errorMessageFrom(error) ?? 'Web search failed' }
+    }
+  })
+
+  // Opens a result in the user's default browser.
+  defineInvokeHandler(params.context, electronOpenExternalUrl, async ({ url }): Promise<ElectronOpenExternalUrlResult> => {
+    try {
+      await shell.openExternal(url)
+      return { ok: true }
+    }
+    catch (error) {
+      return { ok: false, error: errorMessageFrom(error) ?? 'Failed to open URL' }
     }
   })
 }

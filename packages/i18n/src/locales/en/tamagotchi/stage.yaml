@@ -44,6 +44,12 @@ docs:
   'empty': No files or folders here.
   'error': Could not load this folder.
 
+'web-search':
+  'title': Web search
+  'close': Close
+  'loading': Searching…
+  'empty': No results found.
+
 widgets:
   close: Close widget
   empty:

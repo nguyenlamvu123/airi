@@ -37,14 +37,17 @@ import ControlsIsland from '../components/stage-islands/controls-island/index.vu
 import FileBrowserPanel from '../components/stage-islands/file-browser-panel/index.vue'
 import ResourceStatusIsland from '../components/stage-islands/resource-status-island/index.vue'
 import StatusIsland from '../components/stage-islands/status-island/index.vue'
+import WebSearchPanel from '../components/stage-islands/web-search-panel/index.vue'
 
 import { electronOpenOnboarding } from '../../shared/eventa'
 import { modelSettingsRuntimeSnapshotChannelName } from '../../shared/model-settings-runtime'
 import { matchFileBrowserCommand } from '../libs/file-browser-core'
+import { parseSearchCommand } from '../libs/web-search-core'
 import { useChatSyncStore } from '../stores/chat-sync'
 import { useControlsIslandStore } from '../stores/controls-island'
 import { useFileBrowserStore } from '../stores/file-browser'
 import { useStageWindowLifecycleStore } from '../stores/stage-window-lifecycle'
+import { useWebSearchStore } from '../stores/web-search'
 import { shouldSampleStageTransparency } from '../utils/stage-three-transparency'
 import { createVoiceInputInteractionLifecycle } from '../utils/voice-input-lifecycle'
 import {
@@ -151,6 +154,9 @@ const hearingDialogOpen = computed(() => controlsIslandRef.value?.hearingDialogO
 const fileBrowserStore = useFileBrowserStore()
 const { isOpen: fileBrowserOpen } = storeToRefs(fileBrowserStore)
 
+const webSearchStore = useWebSearchStore()
+const { isOpen: webSearchOpen } = storeToRefs(webSearchStore)
+
 const modelSettingsRuntimeSnapshot = computed<ModelSettingsRuntimeSnapshot>(() => {
   const hasModel = !!stageModelSelectedUrl.value
 
@@ -228,7 +234,7 @@ const modelSettingsRuntimeSnapshot = computed<ModelSettingsRuntimeSnapshot>(() =
   })
 })
 
-watch([isOutsideFor250Ms, isOutsideStatusIslandFor250Ms, isAroundWindowBorderFor250Ms, isOutsideWindow, isTransparent, hearingDialogOpen, fileBrowserOpen, fadeOnHoverEnabled, stagePaused], () => {
+watch([isOutsideFor250Ms, isOutsideStatusIslandFor250Ms, isAroundWindowBorderFor250Ms, isOutsideWindow, isTransparent, hearingDialogOpen, fileBrowserOpen, webSearchOpen, fadeOnHoverEnabled, stagePaused], () => {
   if (stagePaused.value) {
     isIgnoringMouseEvents.value = false
     shouldFadeOnCursorWithin.value = false
@@ -237,7 +243,7 @@ watch([isOutsideFor250Ms, isOutsideStatusIslandFor250Ms, isAroundWindowBorderFor
     return
   }
 
-  if (hearingDialogOpen.value || fileBrowserOpen.value) {
+  if (hearingDialogOpen.value || fileBrowserOpen.value || webSearchOpen.value) {
     // A dialog/drawer is open; keep window interactive
     isIgnoringMouseEvents.value = false
     shouldFadeOnCursorWithin.value = false
@@ -648,25 +654,31 @@ watch(nowSpeaking, async (speaking) => {
   scheduleAssistantSpeechResume()
 })
 
-let unsubscribeFileBrowserCommand: (() => void) | undefined
+let unsubscribeChatCommands: (() => void) | undefined
 
 onMounted(() => {
   if (onboardingStore.needsOnboarding) {
     openOnboarding()
   }
 
-  // Builtin file browser: a literal "duyệt file" message opens the panel.
-  // Hooked into the authority orchestrator so messages sent from the chat or
-  // spotlight windows (routed through chat-sync) land here too.
-  unsubscribeFileBrowserCommand = chatOrchestrator.onBeforeMessageComposed(async (message) => {
+  // Builtin chat commands: literal "duyệt file" opens the file browser, while
+  // "tìm kiếm: <query>" runs a web search. Hooked into the authority
+  // orchestrator so messages sent from the chat or spotlight windows (routed
+  // through chat-sync) land here too.
+  unsubscribeChatCommands = chatOrchestrator.onBeforeMessageComposed(async (message) => {
     if (matchFileBrowserCommand(message)) {
       await fileBrowserStore.openBrowser()
+      return
     }
+
+    const query = parseSearchCommand(message)
+    if (query)
+      await webSearchStore.search(query)
   })
 })
 
 onUnmounted(() => {
-  unsubscribeFileBrowserCommand?.()
+  unsubscribeChatCommands?.()
   postModelSettingsRuntimeEvent({
     type: 'owner-gone',
     ownerInstanceId: modelSettingsRuntimeOwnerInstanceId,
@@ -739,6 +751,7 @@ const cursorPosition = computed(() => ({
         <HoloCoupon />
         <ControlsIsland ref="controlsIslandRef" />
         <FileBrowserPanel />
+        <WebSearchPanel />
       </div>
     </div>
     <!-- Loading overlay sits on top, does not hide the stage -->
