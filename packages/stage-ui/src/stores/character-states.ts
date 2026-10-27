@@ -5,6 +5,7 @@ import { ref } from 'vue'
 
 import characterStatesMappingJson from '../assets/emoji-videos/states.json'
 
+import { omitCommandEntries } from './command-keywords'
 import { findKeywordReaction } from './keyword-reactions'
 
 /**
@@ -54,7 +55,10 @@ export async function resolveCharacterState(
   text: string,
   options: CharacterStateResolverOptions = {},
 ): Promise<ResolvedCharacterState | undefined> {
-  const mapping = options.mapping ?? characterStatesMappingJson
+  // `states.json` also carries `@command:` entries (editable chat triggers such
+  // as "duyệt file"). They must never act as avatar states, otherwise a command
+  // keyword could shadow a real state keyword in the longest-match search.
+  const mapping = omitCommandEntries(options.mapping ?? characterStatesMappingJson)
   const resolveUrl = options.resolveUrl ?? defaultResolveCharacterStateUrl
 
   const hit = findKeywordReaction(text, mapping)

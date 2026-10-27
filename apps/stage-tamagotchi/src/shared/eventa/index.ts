@@ -368,7 +368,7 @@ export const electronListDirectory = defineInvokeEventa<ElectronListDirectoryRes
 export type ElectronOpenPathResult = { ok: true } | { ok: false, error: string }
 export const electronOpenPath = defineInvokeEventa<ElectronOpenPathResult, { path: string }>('eventa:invoke:electron:fs:open-path')
 
-// Builtin web search: AIRI answers "tìm kiếm: <query>" with DuckDuckGo results
+// Builtin web search: AIRI answers "duyệt web: <query>" with DuckDuckGo results
 // shown in the pet window and opened externally via the default browser.
 export interface WebSearchResult {
   title: string
