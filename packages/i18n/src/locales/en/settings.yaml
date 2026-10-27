@@ -1362,6 +1362,9 @@ pages:
       openai-compatible:
         description: OpenAI Compatible
         title: OpenAI Compatible
+      opencode:
+        description: Local opencode agent session as the chat backend.
+        title: OpenCode
       nvidia:
         description: build.nvidia.com
         title: NVIDIA NIM

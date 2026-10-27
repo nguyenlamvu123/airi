@@ -8,6 +8,7 @@ import type {
   ElectronOpenExternalUrlResult,
   ElectronOpenPathResult,
   ElectronReadTextFileResult,
+  OpencodeBridgeStatus,
   WebSearchResultsResult,
 } from '../../../shared/eventa'
 import type { I18n } from '../../libs/i18n'
@@ -27,12 +28,16 @@ import { isMacOS } from 'std-env'
 import {
   electronGetHomeDirectory,
   electronListDirectory,
+  electronOpencodeEnsure,
+  electronOpencodeStatus,
+  electronOpencodeStop,
   electronOpenExternalUrl,
   electronOpenPath,
   electronReadTextFile,
   electronSearchWeb,
 } from '../../../shared/eventa'
 import { fetchDuckDuckGoResults } from '../../libs/duckduckgo'
+import { opencodeBridgeManager } from '../../libs/opencode/manager'
 import { createServerChannelService } from '../../services/airi/channel-server'
 import { createI18nService } from '../../services/airi/i18n'
 import { createAppService, createPowerMonitorService, createScreenService, createSystemPreferencesService, createWindowService } from '../../services/electron'
@@ -300,5 +305,19 @@ export async function setupBaseWindowElectronInvokes(params: {
     catch (error) {
       return { ok: false, error: errorMessageFrom(error) ?? 'Failed to open URL' }
     }
+  })
+
+  // Local opencode chat backend. `ensure` lazily spawns `opencode serve` plus
+  // the OpenAI-compatible proxy; the renderer points the `opencode` provider at
+  // the returned `proxyBaseUrl`.
+  defineInvokeHandler(params.context, electronOpencodeEnsure, async ({ directory }): Promise<OpencodeBridgeStatus> =>
+    await opencodeBridgeManager.ensure({ directory }))
+
+  defineInvokeHandler(params.context, electronOpencodeStatus, async (): Promise<OpencodeBridgeStatus> =>
+    opencodeBridgeManager.status())
+
+  defineInvokeHandler(params.context, electronOpencodeStop, async (): Promise<OpencodeBridgeStatus> => {
+    await opencodeBridgeManager.stop()
+    return opencodeBridgeManager.status()
   })
 }

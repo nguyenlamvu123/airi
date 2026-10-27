@@ -383,6 +383,24 @@ export const electronSearchWeb = defineInvokeEventa<WebSearchResultsResult, { qu
 export type ElectronOpenExternalUrlResult = { ok: true } | { ok: false, error: string }
 export const electronOpenExternalUrl = defineInvokeEventa<ElectronOpenExternalUrlResult, { url: string }>('eventa:invoke:electron:web:open-external-url')
 
+// Local opencode chat backend: the main process spawns `opencode serve` in a
+// chosen directory and exposes an OpenAI-compatible proxy the renderer's
+// `opencode` provider points at.
+export interface OpencodeBridgeStatus {
+  running: boolean
+  /** OpenAI-compatible base URL (includes `/v1`) for the `opencode` provider. */
+  proxyBaseUrl?: string
+  /** Base URL of the underlying `opencode serve` instance. */
+  serverBaseUrl?: string
+  /** Directory opencode treats as the project root. */
+  directory?: string
+  /** Present when the last start attempt failed. */
+  error?: string
+}
+export const electronOpencodeEnsure = defineInvokeEventa<OpencodeBridgeStatus, { directory?: string }>('eventa:invoke:electron:opencode:ensure')
+export const electronOpencodeStatus = defineInvokeEventa<OpencodeBridgeStatus>('eventa:invoke:electron:opencode:status')
+export const electronOpencodeStop = defineInvokeEventa<OpencodeBridgeStatus>('eventa:invoke:electron:opencode:stop')
+
 export const electronWindowClose = defineInvokeEventa<void>('eventa:invoke:electron:window:close')
 export type ElectronWindowLifecycleReason
   = | 'initial'

@@ -1,5 +1,6 @@
 import './amazon-bedrock'
 import './openai'
+import './opencode'
 import './aihubmix'
 import './lm-studio'
 import './azure-openai'
