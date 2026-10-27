@@ -33,6 +33,17 @@ docs:
   'account': Account
   'logout': Sign out
 
+'file-browser':
+  'title': File browser
+  'home': Home
+  'up': Up
+  'back': Back
+  'reload': Reload
+  'close': Close
+  'loading': Loading…
+  'empty': No files or folders here.
+  'error': Could not load this folder.
+
 widgets:
   close: Close widget
   empty:

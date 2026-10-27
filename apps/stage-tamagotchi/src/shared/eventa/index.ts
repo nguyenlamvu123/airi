@@ -348,6 +348,26 @@ export type ElectronReadTextFileResult
     | { ok: false, error: string }
 export const electronReadTextFile = defineInvokeEventa<ElectronReadTextFileResult, ElectronReadTextFilePayload>('eventa:invoke:electron:fs:read-text-file')
 
+// Builtin file browser: browse the user's filesystem from the pet window
+// (AIRI replaces the OS file manager flow).
+export interface ElectronDirectoryEntry {
+  /** Bare entry name, e.g. "Documents". */
+  name: string
+  /** Absolute path of the entry. */
+  path: string
+  kind: 'directory' | 'file'
+  /** Byte size for regular files; omitted for directories. */
+  size?: number
+}
+export type ElectronListDirectoryResult
+  = | { ok: true, path: string, entries: ElectronDirectoryEntry[] }
+    | { ok: false, error: string }
+export const electronGetHomeDirectory = defineInvokeEventa<{ path: string }>('eventa:invoke:electron:fs:get-home-directory')
+export const electronListDirectory = defineInvokeEventa<ElectronListDirectoryResult, { path: string }>('eventa:invoke:electron:fs:list-directory')
+
+export type ElectronOpenPathResult = { ok: true } | { ok: false, error: string }
+export const electronOpenPath = defineInvokeEventa<ElectronOpenPathResult, { path: string }>('eventa:invoke:electron:fs:open-path')
+
 export const electronWindowClose = defineInvokeEventa<void>('eventa:invoke:electron:window:close')
 export type ElectronWindowLifecycleReason
   = | 'initial'
