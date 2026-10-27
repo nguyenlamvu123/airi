@@ -2,8 +2,8 @@
  * Minimal shape of the opencode server-sent event stream we depend on.
  *
  * opencode emits many event types; we only read the fields needed to turn the
- * `build`-agent turn into incremental assistant text. Field names mirror the
- * `data:` JSON payloads from `GET /event` on `opencode serve`.
+ * turn into incremental assistant text. Field names mirror the `data:` JSON
+ * payloads from `GET /event` on `opencode serve`.
  */
 export interface OpencodeStreamEvent {
   type: string
@@ -40,7 +40,7 @@ export interface OpencodeStreamEvent {
  * One tracker instance is bound to a single opencode session: events from other
  * sessions are ignored so concurrent conversations never cross-talk.
  */
-export function createAssistantTextTracker(sessionID: string) {
+export function createOpencodeTextTracker(sessionID: string) {
   const assistantMessageIDs = new Set<string>()
   const partTypes = new Map<string, string>()
 

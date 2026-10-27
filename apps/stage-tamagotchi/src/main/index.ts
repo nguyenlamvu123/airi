@@ -25,10 +25,10 @@ import { nullFileLoggerHandle, setupFileLogger } from './app/file-logger'
 import { installSingleInstanceGuard } from './app/single-instance'
 import { createArtistryConfig } from './configs/artistry'
 import { createGlobalAppConfig } from './configs/global'
+import { agentBackendManager } from './libs/agent/manager'
 import { emitAppBeforeQuit, emitAppReady, emitAppWindowAllClosed } from './libs/bootkit/lifecycle'
 import { setElectronMainDirname } from './libs/electron/location'
 import { createI18n } from './libs/i18n'
-import { opencodeBridgeManager } from './libs/opencode/manager'
 import { createWindowAuthManagerService } from './services/airi/auth'
 import { setupServerChannel } from './services/airi/channel-server'
 import { setupGodotStageManager } from './services/airi/godot-stage'
@@ -329,7 +329,7 @@ async function handleAppExit() {
   await Promise.all([
     logIfError('execute onAppBeforeQuit hooks', () => emitAppBeforeQuit()),
     logIfError('stop injeca', () => injeca.stop()),
-    logIfError('stop opencode bridge', () => opencodeBridgeManager.stop()),
+    logIfError('stop agent backend', () => agentBackendManager.stop()),
   ])
 
   // Prevent the global log hook from trying to write to the file after close() is called,

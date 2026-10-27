@@ -10,8 +10,8 @@ import { defineProvider } from '../registry'
  *
  * The desktop main process spawns `opencode serve` plus an OpenAI-compatible
  * proxy; the renderer rewrites this value at boot to the proxy's actual URL
- * (`electronOpencodeEnsure`). The static default keeps the settings page usable
- * when the bridge is not running and documents the intended endpoint.
+ * (`electronAgentBackendEnsure`). The static default keeps the settings page
+ * usable when the bridge is not running and documents the intended endpoint.
  */
 const DEFAULT_OPENCODE_BASE_URL = 'http://127.0.0.1:46800/v1'
 

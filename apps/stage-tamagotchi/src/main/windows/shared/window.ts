@@ -3,12 +3,13 @@ import type { ResizeDirection } from '@proj-airi/electron-eventa'
 import type { BrowserWindow, BrowserWindowConstructorOptions } from 'electron'
 
 import type {
+  AgentBackendInfo,
+  AgentBackendStatus,
   ElectronDirectoryEntry,
   ElectronListDirectoryResult,
   ElectronOpenExternalUrlResult,
   ElectronOpenPathResult,
   ElectronReadTextFileResult,
-  OpencodeBridgeStatus,
   WebSearchResultsResult,
 } from '../../../shared/eventa'
 import type { I18n } from '../../libs/i18n'
@@ -26,18 +27,20 @@ import { shell } from 'electron'
 import { isMacOS } from 'std-env'
 
 import {
+  electronAgentBackendEnsure,
+  electronAgentBackendList,
+  electronAgentBackendStatus,
+  electronAgentBackendStop,
   electronGetHomeDirectory,
   electronListDirectory,
-  electronOpencodeEnsure,
-  electronOpencodeStatus,
-  electronOpencodeStop,
   electronOpenExternalUrl,
   electronOpenPath,
   electronReadTextFile,
   electronSearchWeb,
 } from '../../../shared/eventa'
+import { agentBackendManager } from '../../libs/agent/manager'
+import { listAgentBackends } from '../../libs/agent/registry'
 import { fetchDuckDuckGoResults } from '../../libs/duckduckgo'
-import { opencodeBridgeManager } from '../../libs/opencode/manager'
 import { createServerChannelService } from '../../services/airi/channel-server'
 import { createI18nService } from '../../services/airi/i18n'
 import { createAppService, createPowerMonitorService, createScreenService, createSystemPreferencesService, createWindowService } from '../../services/electron'
@@ -307,17 +310,20 @@ export async function setupBaseWindowElectronInvokes(params: {
     }
   })
 
-  // Local opencode chat backend. `ensure` lazily spawns `opencode serve` plus
-  // the OpenAI-compatible proxy; the renderer points the `opencode` provider at
-  // the returned `proxyBaseUrl`.
-  defineInvokeHandler(params.context, electronOpencodeEnsure, async ({ directory }): Promise<OpencodeBridgeStatus> =>
-    await opencodeBridgeManager.ensure({ directory }))
+  // Local agent chat backends. `ensure` starts the chosen backend plus the
+  // OpenAI-compatible proxy; the renderer points the matching provider at the
+  // returned `proxyBaseUrl` and resumes the returned `sessionID` next launch.
+  defineInvokeHandler(params.context, electronAgentBackendList, async (): Promise<AgentBackendInfo[]> =>
+    listAgentBackends())
 
-  defineInvokeHandler(params.context, electronOpencodeStatus, async (): Promise<OpencodeBridgeStatus> =>
-    opencodeBridgeManager.status())
+  defineInvokeHandler(params.context, electronAgentBackendEnsure, async ({ backendId, directory, resumeSessionID }): Promise<AgentBackendStatus> =>
+    await agentBackendManager.ensure({ backendId, directory, resumeSessionID }))
 
-  defineInvokeHandler(params.context, electronOpencodeStop, async (): Promise<OpencodeBridgeStatus> => {
-    await opencodeBridgeManager.stop()
-    return opencodeBridgeManager.status()
+  defineInvokeHandler(params.context, electronAgentBackendStatus, async (): Promise<AgentBackendStatus> =>
+    agentBackendManager.status())
+
+  defineInvokeHandler(params.context, electronAgentBackendStop, async (): Promise<AgentBackendStatus> => {
+    await agentBackendManager.stop()
+    return agentBackendManager.status()
   })
 }

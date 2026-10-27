@@ -1310,6 +1310,9 @@ pages:
       opencode:
         description: Phiên opencode cục bộ làm backend trò chuyện.
         title: OpenCode
+      claude-code:
+        description: Phiên Claude Code cục bộ làm backend trò chuyện.
+        title: Claude Code
       nvidia:
         description: build.nvidia.com
         title: NVIDIA NIM

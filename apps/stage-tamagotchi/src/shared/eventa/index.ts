@@ -383,23 +383,55 @@ export const electronSearchWeb = defineInvokeEventa<WebSearchResultsResult, { qu
 export type ElectronOpenExternalUrlResult = { ok: true } | { ok: false, error: string }
 export const electronOpenExternalUrl = defineInvokeEventa<ElectronOpenExternalUrlResult, { url: string }>('eventa:invoke:electron:web:open-external-url')
 
-// Local opencode chat backend: the main process spawns `opencode serve` in a
-// chosen directory and exposes an OpenAI-compatible proxy the renderer's
-// `opencode` provider points at.
-export interface OpencodeBridgeStatus {
+// Local agent chat backends (opencode, Claude Code, ...): the main process
+// starts the chosen backend in a project directory and exposes an
+// OpenAI-compatible proxy the renderer's matching provider points at.
+export interface AgentBackendInfo {
+  id: string
+  label: string
+  description: string
+  /** Underlying mechanism, used only for diagnostics/UI hints. */
+  kind: 'http' | 'cli' | 'acp'
+  /** Executable probed on PATH. */
+  command: string
+  /** False when the executable is missing or the adapter is not implemented. */
+  available: boolean
+}
+
+export interface AgentBackendStatus {
   running: boolean
-  /** OpenAI-compatible base URL (includes `/v1`) for the `opencode` provider. */
+  /** Backend id that is (or was last) active. */
+  backendId?: string
+  /** OpenAI-compatible base URL (includes `/v1`) for the backend's provider. */
   proxyBaseUrl?: string
-  /** Base URL of the underlying `opencode serve` instance. */
+  /** Server/project base URL for HTTP backends (diagnostics). */
   serverBaseUrl?: string
-  /** Directory opencode treats as the project root. */
+  /** Live conversation session id; persist and pass back to resume it. */
+  sessionID?: string
+  /** Directory the agent treats as the project root. */
   directory?: string
   /** Present when the last start attempt failed. */
   error?: string
 }
-export const electronOpencodeEnsure = defineInvokeEventa<OpencodeBridgeStatus, { directory?: string }>('eventa:invoke:electron:opencode:ensure')
-export const electronOpencodeStatus = defineInvokeEventa<OpencodeBridgeStatus>('eventa:invoke:electron:opencode:status')
-export const electronOpencodeStop = defineInvokeEventa<OpencodeBridgeStatus>('eventa:invoke:electron:opencode:stop')
+
+export interface AgentBackendEnsureRequest {
+  backendId: string
+  /** Explicit project directory; omitted means the main process discovers it. */
+  directory?: string
+  /** Persisted session id to resume the same conversation on next launch. */
+  resumeSessionID?: string
+}
+
+/**
+ * Model id every agent backend's proxy advertises. AIRI sends this as the
+ * `model` field; the backend ignores it and uses its own configured model.
+ */
+export const AGENT_PROXY_MODEL_ID = 'agent'
+
+export const electronAgentBackendList = defineInvokeEventa<AgentBackendInfo[]>('eventa:invoke:electron:agent:list')
+export const electronAgentBackendEnsure = defineInvokeEventa<AgentBackendStatus, AgentBackendEnsureRequest>('eventa:invoke:electron:agent:ensure')
+export const electronAgentBackendStatus = defineInvokeEventa<AgentBackendStatus>('eventa:invoke:electron:agent:status')
+export const electronAgentBackendStop = defineInvokeEventa<AgentBackendStatus>('eventa:invoke:electron:agent:stop')
 
 export const electronWindowClose = defineInvokeEventa<void>('eventa:invoke:electron:window:close')
 export type ElectronWindowLifecycleReason
