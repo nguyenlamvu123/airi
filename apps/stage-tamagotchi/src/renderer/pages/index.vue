@@ -37,6 +37,7 @@ import ControlsIsland from '../components/stage-islands/controls-island/index.vu
 import FileBrowserPanel from '../components/stage-islands/file-browser-panel/index.vue'
 import ResourceStatusIsland from '../components/stage-islands/resource-status-island/index.vue'
 import StatusIsland from '../components/stage-islands/status-island/index.vue'
+import AgentBackendIndicator from '../components/stage-islands/agent-backend-indicator/index.vue'
 import WebSearchPanel from '../components/stage-islands/web-search-panel/index.vue'
 
 import { electronOpenOnboarding } from '../../shared/eventa'
@@ -741,6 +742,7 @@ const cursorPosition = computed(() => ({
       >
         <StatusIsland v-if="IS_DEV" ref="statusIslandRef" />
         <ResourceStatusIsland />
+        <AgentBackendIndicator />
         <WidgetStage
           ref="widgetStageRef"
           v-model:state="componentStateStage"
