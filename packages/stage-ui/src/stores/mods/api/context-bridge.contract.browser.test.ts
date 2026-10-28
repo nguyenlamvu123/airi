@@ -399,7 +399,7 @@ describe('context bridge contract', () => {
     activeModelRef.value = 'mock-model'
     getProviderInstanceMock.mockResolvedValueOnce({})
     const store = useContextBridgeStore()
-    await store.initialize()
+    await store.initialize({ acceptRemoteTextInput: true })
 
     await emitServerEvent('input:text', {
       type: 'input:text',
@@ -435,6 +435,65 @@ describe('context bridge contract', () => {
         text: 'input weather',
       }),
     ])
+
+    await store.dispose()
+  })
+
+  it('ignores input:text from the server channel unless the host opts in', async () => {
+    // ROOT CAUSE:
+    //
+    // Every host joined the `chat-ingestion` consumer group for `input:text`
+    // and answered each one as a chat turn, so any connected service (Discord
+    // bot, Twitter service, plugins) could spend tokens or drive the agent
+    // without the local user typing anything.
+    //
+    // We fixed this by making `acceptRemoteTextInput` default to false: the
+    // host neither registers for `input:text` nor answers broadcast copies.
+    vi.spyOn(console, 'info').mockImplementation(() => {})
+    activeProviderRef.value = 'mock-provider'
+    activeModelRef.value = 'mock-model'
+    getProviderInstanceMock.mockResolvedValue({})
+    const store = useContextBridgeStore()
+    await store.initialize()
+
+    await emitServerEvent('input:text', {
+      type: 'input:text',
+      source: 'discord',
+      data: {
+        text: 'hello from discord',
+        contextUpdates: [
+          {
+            strategy: ContextUpdateStrategy.AppendSelf,
+            text: 'discord channel context',
+          },
+        ],
+      },
+    })
+
+    const registeredEvents = serverSendMock.mock.calls
+      .map(([message]) => message as { type: string, data?: { event?: string } })
+      .filter(message => message.type === 'module:consumer:register')
+      .map(message => message.data?.event)
+    expect(registeredEvents).not.toContain('input:text')
+    expect(registeredEvents).toContain('input:text:voice')
+    expect(chatContextIngestMock).not.toHaveBeenCalled()
+    expect(chatOrchestratorMock.ingest).not.toHaveBeenCalled()
+
+    await store.dispose()
+  })
+
+  it('joins the input:text consumer group when the host opts in', async () => {
+    const store = useContextBridgeStore()
+    await store.initialize({ acceptRemoteTextInput: true })
+
+    expect(serverSendMock).toHaveBeenCalledWith({
+      type: 'module:consumer:register',
+      data: {
+        event: 'input:text',
+        mode: 'consumer-group',
+        group: 'chat-ingestion',
+      },
+    })
 
     await store.dispose()
   })
@@ -518,7 +577,7 @@ describe('context bridge contract', () => {
     activeModelRef.value = 'mock-model'
     getProviderInstanceMock.mockResolvedValueOnce({})
     const store = useContextBridgeStore()
-    await store.initialize()
+    await store.initialize({ acceptRemoteTextInput: true })
 
     await emitServerEvent('input:text', {
       type: 'input:text',

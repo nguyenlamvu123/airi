@@ -19,6 +19,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { sparkNotifyCommandSchema, useCharacterOrchestratorStore } from '.'
 import { useCharacterStore } from '..'
 import { useLLM } from '../../llm'
+import { useModsServerChannelStore } from '../../mods/api/channel-server'
 import { useAiriCardStore, useConsciousnessStore } from '../../modules'
 import { useProvidersStore } from '../../providers'
 
@@ -328,5 +329,38 @@ describe('store character-orchestrator', () => {
     const renderedMessages = mockStream.mock.calls[0]?.[2] as Array<{ role: string, content: string }> | undefined
     expect(String(renderedMessages?.[0]?.content)).toContain('Plugin-specific hint')
     expect(String(renderedMessages?.[1]?.content)).toContain('Rendered board snapshot')
+  })
+
+  it('ignores spark:notify from the server channel unless the host opts in', () => {
+    // ROOT CAUSE:
+    //
+    // Every host subscribed to `spark:notify` on the server channel, so any
+    // connected service (Minecraft, browser extension, plugins) could start
+    // an LLM turn that nobody at the machine asked for.
+    //
+    // We fixed this by subscribing only when `initialize` gets
+    // `acceptRemoteSparkNotify: true`; the default is off on every host.
+    const onEvent = vi.fn().mockReturnValue(() => {})
+    mockedStore(useModsServerChannelStore).onEvent = onEvent
+
+    const store = useCharacterOrchestratorStore()
+    store.initialize()
+    const subscribed = onEvent.mock.calls.map(call => call[0])
+    store.dispose()
+
+    expect(subscribed).not.toContain('spark:notify')
+    expect(subscribed).toContain('spark:emit')
+  })
+
+  it('subscribes to spark:notify when the host opts in', () => {
+    const onEvent = vi.fn().mockReturnValue(() => {})
+    mockedStore(useModsServerChannelStore).onEvent = onEvent
+
+    const store = useCharacterOrchestratorStore()
+    store.initialize({ acceptRemoteSparkNotify: true })
+    const subscribed = onEvent.mock.calls.map(call => call[0])
+    store.dispose()
+
+    expect(subscribed).toContain('spark:notify')
   })
 })

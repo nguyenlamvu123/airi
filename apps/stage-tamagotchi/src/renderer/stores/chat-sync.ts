@@ -18,11 +18,15 @@ import { executeToolCallRerun } from '@proj-airi/stage-ui/stores/tool-call-rerun
 import { defineStore, storeToRefs } from 'pinia'
 import { ref, watch } from 'vue'
 
+import { matchFileBrowserCommand } from '../libs/file-browser-core'
+import { parseSearchCommand } from '../libs/web-search-core'
+import { useFileBrowserStore } from './file-browser'
 import { imageJournalTools } from './tools/builtin/image-journal'
 import { reminderTools } from './tools/builtin/reminders'
 import { storyTellerTools } from './tools/builtin/story-teller'
 import { weatherTools } from './tools/builtin/weather'
 import { widgetsTools } from './tools/builtin/widgets'
+import { useWebSearchStore } from './web-search'
 
 type ChatSyncMode = 'inactive' | 'authority' | 'follower' | 'client'
 type ToolsetId = 'widgets' | 'artistry'
@@ -334,7 +338,35 @@ export const useChatSyncStore = defineStore('stage-tamagotchi:chat-sync', () => 
     return assistant ? extractMessageText(assistant) : ''
   }
 
+  // Built-in chat commands (keywords from states.json, e.g. "duyệt file" and
+  // "duyệt web: <query>") are answered by opening a local panel, so they stop
+  // here and never reach the LLM or agent, which would only spend tokens on a
+  // second answer to the same request. Every user send path (typed, voice,
+  // spotlight, chat window) ends in `executeIngest` on the authority window,
+  // which also hosts the panels.
+  //
+  // The panel work is not awaited: a slow disk or network must not hold up the
+  // send queue. The panel stores own their loading and error state and never
+  // reject.
+  function runBuiltinCommand(text: string): boolean {
+    if (matchFileBrowserCommand(text)) {
+      void useFileBrowserStore().openBrowser()
+      return true
+    }
+
+    const query = parseSearchCommand(text)
+    if (query) {
+      void useWebSearchStore().search(query)
+      return true
+    }
+
+    return false
+  }
+
   async function executeIngest(payload: IngestCommandPayload): Promise<void> {
+    if (runBuiltinCommand(payload.text))
+      return
+
     const providerId = activeProvider.value
     const modelId = activeModel.value
     if (!providerId || !modelId) {
@@ -359,6 +391,13 @@ export const useChatSyncStore = defineStore('stage-tamagotchi:chat-sync', () => 
     // NOTICE: `chatOrchestrator.ingest()` returns void; remove this snapshot
     // read once ingest returns `{ sessionId, visibleText }`.
     const sessionId = activeSessionId.value
+
+    // A built-in command has no chat reply to read back: its panel opens in
+    // this (authority) window. Empty `visibleText` tells spotlight to show
+    // nothing, instead of failing below with "empty response".
+    if (runBuiltinCommand(payload.text))
+      return { sessionId, visibleText: '' }
+
     const previousMessageCount = chatSession.getSessionMessages(sessionId).length
 
     await executeIngest({

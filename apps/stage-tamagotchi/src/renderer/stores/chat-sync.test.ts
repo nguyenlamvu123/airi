@@ -12,6 +12,8 @@ const mockResolveLlmTools = vi.hoisted(() => vi.fn<(options?: { customTools?: ((
 const mockWidgetsTools = vi.hoisted(() => vi.fn<() => Promise<Tool[]>>(async () => []))
 const mockWeatherTools = vi.hoisted(() => vi.fn<() => Promise<Tool[]>>(async () => []))
 const mockImageJournalTools = vi.hoisted(() => vi.fn<() => Promise<Tool[]>>(async () => []))
+const mockOpenBrowser = vi.hoisted(() => vi.fn<() => Promise<void>>())
+const mockWebSearch = vi.hoisted(() => vi.fn<(query: string) => Promise<void>>())
 
 interface MockBroadcastMessageEvent<T> {
   data: T
@@ -185,6 +187,15 @@ vi.mock('./tools/builtin/image-journal', () => ({
   imageJournalTools: mockImageJournalTools,
 }))
 
+// The panel stores talk to the main process over Electron IPC.
+vi.mock('./file-browser', () => ({
+  useFileBrowserStore: () => ({ openBrowser: mockOpenBrowser }),
+}))
+
+vi.mock('./web-search', () => ({
+  useWebSearchStore: () => ({ search: mockWebSearch }),
+}))
+
 describe('useChatSyncStore', async () => {
   const { useChatSyncStore } = await import('./chat-sync')
 
@@ -238,6 +249,10 @@ describe('useChatSyncStore', async () => {
     mockWeatherTools.mockResolvedValue([])
     mockImageJournalTools.mockReset()
     mockImageJournalTools.mockResolvedValue([])
+    mockOpenBrowser.mockReset()
+    mockOpenBrowser.mockResolvedValue(undefined)
+    mockWebSearch.mockReset()
+    mockWebSearch.mockResolvedValue(undefined)
 
     mockState = {
       activeSessionId,
@@ -363,6 +378,71 @@ describe('useChatSyncStore', async () => {
 
     peer.close()
     store.dispose()
+  })
+
+  // docs/brainstorms/2026-10-28-kiem-tra-tinh-nang-tu-b8dbc269e.md (H2)
+  it('h2: answers "duyệt file" with the file browser and never sends it to the LLM', async () => {
+    // ROOT CAUSE:
+    //
+    // The commands ran in an `onBeforeMessageComposed` hook. The orchestrator
+    // awaits every hook before calling the LLM, and a hook cannot cancel the
+    // turn, so the message waited on the panel work and then still reached
+    // the LLM or agent, which answered the same request a second time.
+    //
+    // We fixed this by matching commands in `executeIngest`, the point every
+    // send path reaches, firing the panel without awaiting it and returning
+    // before `ingest`.
+    const store = useChatSyncStore()
+    store.initialize('authority')
+
+    await store.requestIngest({ text: 'Duyệt file', sessionId: 'session-1' })
+
+    expect(mockOpenBrowser).toHaveBeenCalledTimes(1)
+    expect(mockWebSearch).not.toHaveBeenCalled()
+    expect(mockState.ingest).not.toHaveBeenCalled()
+
+    store.dispose()
+  })
+
+  // docs/brainstorms/2026-10-28-kiem-tra-tinh-nang-tu-b8dbc269e.md (H2)
+  it('h2: does not hold the send on a web search that never settles', async () => {
+    mockWebSearch.mockReturnValue(new Promise<void>(() => {}))
+    const store = useChatSyncStore()
+    store.initialize('authority')
+
+    await store.requestIngest({ text: 'duyệt web: thời tiết hà nội', sessionId: 'session-1' })
+
+    expect(mockWebSearch).toHaveBeenCalledWith('thời tiết hà nội')
+    expect(mockState.ingest).not.toHaveBeenCalled()
+
+    store.dispose()
+  })
+
+  it('h2: still sends ordinary messages that only mention a command keyword', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const store = useChatSyncStore()
+    store.initialize('authority')
+
+    await store.requestIngest({ text: 'giải thích lệnh duyệt file là gì', sessionId: 'session-1' }).catch(() => {})
+
+    expect(mockOpenBrowser).not.toHaveBeenCalled()
+    expect(mockWebSearch).not.toHaveBeenCalled()
+    expect(mockState.ingest).toHaveBeenCalledTimes(1)
+
+    store.dispose()
+  })
+
+  it('h2: returns an empty spotlight result for a built-in command instead of failing', async () => {
+    const { authorityStore, followerStore } = initializeAuthorityAndFollower()
+
+    const result = await followerStore.requestSpotlightIngest({ text: 'duyet web kyoto' })
+
+    expect(result).toEqual({ sessionId: 'session-1', visibleText: '' })
+    expect(mockWebSearch).toHaveBeenCalledWith('kyoto')
+    expect(mockState.ingest).not.toHaveBeenCalled()
+
+    authorityStore.dispose()
+    followerStore.dispose()
   })
 
   it('rejects follower command timeouts after thirty seconds', async () => {

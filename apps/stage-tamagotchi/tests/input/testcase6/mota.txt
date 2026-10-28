@@ -1,0 +1,19 @@
+testcase6 — cả hai nguồn đều hỏng: báo lỗi gộp, không treo
+==========================================================
+
+MỤC ĐÍCH
+    Chốt nhánh lỗi duy nhất của searchWeb: chỉ ném khi CẢ HAI nguồn thất bại.
+
+ĐẦU VÀO
+    query     = "kyoto"
+    responses = api.duckduckgo.com: lỗi mạng "connect ETIMEDOUT" (giả lập)
+                en.wikipedia.org: HTTP 503 (giả lập)
+
+KỲ VỌNG
+    error.json : một thông báo nêu cả hai lý do, theo thứ tự DuckDuckGo rồi
+                 Wikipedia
+    không có result.json
+
+VÌ SAO QUAN TRỌNG
+    H2: panel phải thoát trạng thái "Đang tìm kiếm…" và hiện lỗi đọc được,
+    thay vì xoay mãi hoặc báo "Không tìm thấy kết quả." như thể mạng vẫn ổn.

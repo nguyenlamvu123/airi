@@ -1,0 +1,47 @@
+{
+  "kind": "proxy",
+  "authorized": false,
+  "reply": "không được tới đây",
+  "request": {
+    "model": "agent",
+    "stream": false,
+    "messages": [
+      {
+        "role": "system",
+        "content": "Bạn là AIRI, một cô gái ảo nói tiếng Việt.\nTrả lời ngắn, không dùng markdown."
+      },
+      {
+        "role": "system",
+        "content": [
+          {
+            "type": "text",
+            "text": "Trước mỗi câu, chèn một marker cảm xúc như <|EMOTE_HAPPY|> hoặc <|ACT:{\"emotion\":\"think\"}|>."
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": "chào AIRI"
+      },
+      {
+        "role": "assistant",
+        "content": "<|EMOTE_HAPPY|> Chào bạn!"
+      },
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "file README nói gì?"
+          },
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": "data:image/png;base64,AAAA"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

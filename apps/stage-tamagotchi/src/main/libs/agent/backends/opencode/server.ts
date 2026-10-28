@@ -1,6 +1,8 @@
 import type { Buffer } from 'node:buffer'
 import type { ChildProcess } from 'node:child_process'
 
+import process from 'node:process'
+
 import { spawn } from 'node:child_process'
 
 /**
@@ -29,6 +31,42 @@ export interface OpencodeServer {
 
 const SERVER_START_TIMEOUT_MS = 30_000
 
+/**
+ * Inline opencode config, passed as `OPENCODE_CONFIG_CONTENT`. Inline config
+ * overrides the user's global and project `opencode.json`.
+ *
+ * Mirrors the read-only session ruleset in `./transport` for opencode builds
+ * that ignore per-session rules. Dangerous keys are denied by name, not only
+ * through `*`, because the user's config is merged key by key and a later
+ * user rule would otherwise win over the catch-all. `.env` files stay
+ * unreadable so secrets never reach the model provider. `autoupdate` and
+ * `share` are off so the server never touches the network or the install on
+ * its own.
+ */
+const AIRI_OPENCODE_CONFIG = {
+  permission: {
+    '*': 'deny',
+    'read': { '*': 'allow', '*.env': 'deny', '*.env.*': 'deny' },
+    'list': 'allow',
+    'glob': 'allow',
+    'grep': 'allow',
+    'edit': 'deny',
+    'bash': 'deny',
+    'task': 'deny',
+    'webfetch': 'deny',
+    'websearch': 'deny',
+    'codesearch': 'deny',
+    'external_directory': 'deny',
+    'lsp': 'deny',
+    'skill': 'deny',
+    'question': 'deny',
+    'todowrite': 'deny',
+    'doom_loop': 'deny',
+  },
+  autoupdate: false,
+  share: 'disabled',
+}
+
 /** Matches the `opencode server listening on http://host:port` startup line. */
 const LISTENING_PATTERN = /listening on (https?:\/\/\S+)/
 
@@ -42,7 +80,11 @@ export function startOpencodeServer(options: OpencodeServerOptions): Promise<Ope
   return new Promise((resolve, reject) => {
     let child: ChildProcess
     try {
-      child = spawn(path, args, { cwd: options.directory, stdio: ['ignore', 'pipe', 'pipe'], env: process.env })
+      child = spawn(path, args, {
+        cwd: options.directory,
+        stdio: ['ignore', 'pipe', 'pipe'],
+        env: { ...process.env, OPENCODE_CONFIG_CONTENT: JSON.stringify(AIRI_OPENCODE_CONFIG) },
+      })
     }
     catch (error) {
       reject(error)

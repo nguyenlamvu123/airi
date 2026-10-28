@@ -404,6 +404,11 @@ export interface AgentBackendStatus {
   backendId?: string
   /** OpenAI-compatible base URL (includes `/v1`) for the backend's provider. */
   proxyBaseUrl?: string
+  /**
+   * Bearer token the proxy requires on every request; pass it as the
+   * provider's API key. Rotates whenever the proxy restarts.
+   */
+  proxyApiKey?: string
   /** Server/project base URL for HTTP backends (diagnostics). */
   serverBaseUrl?: string
   /** Live conversation session id; persist and pass back to resume it. */

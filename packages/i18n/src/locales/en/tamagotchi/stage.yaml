@@ -49,6 +49,7 @@ docs:
   'close': Close
   'loading': Searching…
   'empty': No results found.
+  'open-full': Open full results on DuckDuckGo
 
 widgets:
   close: Close widget

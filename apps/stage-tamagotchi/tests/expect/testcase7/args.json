@@ -1,0 +1,17 @@
+[
+  "-p",
+  "--output-format",
+  "stream-json",
+  "--verbose",
+  "--include-partial-messages",
+  "--tools",
+  "Read,Glob,Grep",
+  "--strict-mcp-config",
+  "--disable-slash-commands",
+  "--settings",
+  "{\"disableAllHooks\":true,\"permissions\":{\"deny\":[\"Read(**/.env)\",\"Read(**/.env.*)\"]}}",
+  "--permission-mode",
+  "dontAsk",
+  "--",
+  "xin chào"
+]

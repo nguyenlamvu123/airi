@@ -21,7 +21,12 @@ const claudeCodeConfigSchema = z.object({
     .default(DEFAULT_CLAUDE_CODE_BASE_URL),
 })
 
-type ClaudeCodeConfig = z.input<typeof claudeCodeConfigSchema>
+/**
+ * `apiKey` is the bridge's per-launch bearer token, written by the desktop app
+ * at boot. It stays out of the schema on purpose: the settings page renders
+ * every schema field, and users must not be asked to type it.
+ */
+type ClaudeCodeConfig = z.input<typeof claudeCodeConfigSchema> & { apiKey?: string }
 
 /**
  * Chat provider that proxies to a local Claude Code agent session.
@@ -39,7 +44,8 @@ export const providerClaudeCode = defineProvider<ClaudeCodeConfig>({
   descriptionLocalize: ({ t }) => t('settings.pages.providers.provider.claude-code.description'),
   tasks: ['chat'],
   icon: 'i-simple-icons:anthropic',
-  // The bridge needs no API key: Claude Code authenticates on its own.
+  // Users enter no credentials: Claude Code authenticates on its own, and the
+  // bridge token is filled in by the desktop app.
   requiresCredentials: false,
 
   createProviderConfig: ({ t }) => claudeCodeConfigSchema.extend({
@@ -50,8 +56,7 @@ export const providerClaudeCode = defineProvider<ClaudeCodeConfig>({
     }),
   }),
   createProvider(config) {
-    // No API key: the local bridge ignores it.
-    return createOpenAI('', config.baseUrl)
+    return createOpenAI(config.apiKey ?? '', config.baseUrl)
   },
 
   // The bridge is managed by the desktop main process, so we never gate the

@@ -17,10 +17,15 @@ export interface OpencodeMessageResult {
 }
 
 export interface OpencodeClient {
-  listSessions: () => Promise<Array<{ id: string }>>
+  /** `permission` is the ruleset the session was created with, when the server reports it. */
+  listSessions: () => Promise<Array<{ id: string, permission?: OpencodePermissionRule[] }>>
   createSession: (options?: { title?: string, permission?: OpencodePermissionRule[] }) => Promise<{ id: string }>
-  /** Sends a user prompt and resolves once the whole assistant turn completes. */
-  prompt: (sessionID: string, text: string) => Promise<OpencodeMessageResult>
+  /**
+   * Sends a user prompt and resolves once the whole assistant turn completes.
+   * `system` is extra system prompt for this message only (opencode stores it on
+   * the user message and does not carry it into later turns).
+   */
+  prompt: (sessionID: string, text: string, system?: string) => Promise<OpencodeMessageResult>
   /** Streams events from `GET /event` until the signal aborts. */
   subscribeEvents: (signal: AbortSignal) => AsyncGenerator<OpencodeStreamEvent>
 }
@@ -46,7 +51,7 @@ export function createOpencodeClient(baseUrl: string): OpencodeClient {
     async listSessions() {
       const response = await fetch(`${root}/session`)
       await assertOk(response, 'opencode session.list')
-      const sessions = await response.json() as Array<{ id: string }>
+      const sessions = await response.json() as Array<{ id: string, permission?: OpencodePermissionRule[] }>
       return sessions
     },
 
@@ -64,11 +69,11 @@ export function createOpencodeClient(baseUrl: string): OpencodeClient {
       return { id: session.id }
     },
 
-    async prompt(sessionID, text) {
+    async prompt(sessionID, text, system) {
       const response = await fetch(`${root}/session/${sessionID}/message`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ parts: [{ type: 'text', text }] }),
+        body: JSON.stringify({ parts: [{ type: 'text', text }], system: system || undefined }),
       })
       await assertOk(response, 'opencode session.message')
       return await response.json() as OpencodeMessageResult

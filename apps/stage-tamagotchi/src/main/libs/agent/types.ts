@@ -18,6 +18,17 @@ export interface AgentPromptResult {
   modelID?: string
 }
 
+/** Per-turn inputs sent alongside the user text. */
+export interface AgentPromptOptions {
+  /**
+   * AIRI's system prompt for this turn: character card, speaking style and the
+   * emotion/ACT marker rules the stage parses from the answer. The backend
+   * keeps its own conversation history but never AIRI's persona, so it must be
+   * resent every turn. Empty or omitted means no persona.
+   */
+  systemPrompt?: string
+}
+
 export interface AgentTransport {
   /**
    * Opens the conversation session. When `options.resumeSessionID` names a
@@ -30,7 +41,7 @@ export interface AgentTransport {
    * chunk as it arrives (may be called zero or more times); the returned
    * promise resolves with the complete turn.
    */
-  prompt: (sessionID: string, text: string, onText: (delta: string) => void) => Promise<AgentPromptResult>
+  prompt: (sessionID: string, text: string, onText: (delta: string) => void, options?: AgentPromptOptions) => Promise<AgentPromptResult>
   /** Releases any process/connection owned by the transport. */
   close: () => Promise<void>
 }

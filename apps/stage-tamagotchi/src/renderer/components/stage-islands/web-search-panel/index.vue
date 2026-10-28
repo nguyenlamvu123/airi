@@ -96,6 +96,22 @@ function displayUrl(url: string): string {
             </span>
           </button>
         </div>
+
+        <!-- Instant Answer and Wikipedia are not a general web search, so the
+             full results page stays one click away, with or without hits. -->
+        <button
+          v-if="!isLoading && query"
+          :class="[
+            'flex items-center justify-center gap-1.5 px-3 py-2',
+            'border-t border-neutral-200/70 dark:border-neutral-800/70',
+            'text-xs text-primary-600 dark:text-primary-400',
+            'hover:bg-neutral-200/60 dark:hover:bg-neutral-800/60',
+          ]"
+          @click="webSearch.openFullResults()"
+        >
+          <div i-ph:arrow-square-out-bold />
+          {{ t('tamagotchi.stage.web-search.open-full') }}
+        </button>
       </div>
     </div>
   </Transition>

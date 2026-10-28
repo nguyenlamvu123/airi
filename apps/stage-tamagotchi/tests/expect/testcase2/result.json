@@ -1,0 +1,27 @@
+[
+  {
+    "title": "Vue.js",
+    "url": "https://en.wikipedia.org/wiki/Vue.js",
+    "snippet": "team members. Vue features an incrementally adaptable architecture that focuses on declarative rendering and component composition. Vue.js features an"
+  },
+  {
+    "title": "Nuxt",
+    "url": "https://en.wikipedia.org/wiki/Nuxt",
+    "snippet": "/pages/admin/[[page]].vue - Matches /admin in addition to all routes directly under it. Nuxt automatically imports most Vue composition API functions, and any"
+  },
+  {
+    "title": "Vuex",
+    "url": "https://en.wikipedia.org/wiki/Vuex",
+    "snippet": "ways. First, Pinia uses a more modern API and is able to leverage the capabilities of the Composition API in Vue.js 3. Pinia has a smaller codebase and different"
+  },
+  {
+    "title": "Port Vue, Pennsylvania",
+    "url": "https://en.wikipedia.org/wiki/Port_Vue%2C_Pennsylvania",
+    "snippet": "04 square miles (0.10 km2), or 3.54%, is water. Port Vue is served by the South Allegheny School District. The Port Vue Police Department is based at 1194"
+  },
+  {
+    "title": "At sign",
+    "url": "https://en.wikipedia.org/wiki/At_sign",
+    "snippet": "Language Specification Version 3.0\". Microsoft Download Center. Archived from the original on 2022-01-26. Retrieved 2013-10-29. \"Vue.js\". vuejs.org. Retrieved"
+  }
+]

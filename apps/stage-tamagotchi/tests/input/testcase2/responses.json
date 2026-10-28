@@ -1,0 +1,146 @@
+[
+  {
+    "url": "https://api.duckduckgo.com/?q=vue+3+composition+api&format=json&no_html=1&skip_disambig=1&t=airi",
+    "status": 200,
+    "body": {
+      "Abstract": "",
+      "AbstractSource": "",
+      "AbstractText": "",
+      "AbstractURL": "",
+      "Answer": "",
+      "AnswerType": "",
+      "Definition": "",
+      "DefinitionSource": "",
+      "DefinitionURL": "",
+      "Entity": "",
+      "Heading": "",
+      "Image": "",
+      "ImageHeight": "",
+      "ImageIsLogo": "",
+      "ImageWidth": "",
+      "Infobox": "",
+      "Redirect": "",
+      "RelatedTopics": [],
+      "Results": [],
+      "Type": "",
+      "meta": {
+        "attribution": null,
+        "blockgroup": null,
+        "created_date": "2021-03-24",
+        "description": "testing",
+        "designer": null,
+        "dev_date": "2021-03-24",
+        "dev_milestone": "development",
+        "developer": [
+          {
+            "name": "zt",
+            "type": "duck.co",
+            "url": "https://duck.co/user/zt"
+          }
+        ],
+        "example_query": "",
+        "id": "just_another_test",
+        "is_stackexchange": 0,
+        "js_callback_name": "another_test",
+        "live_date": null,
+        "maintainer": {
+          "github": ""
+        },
+        "name": "Just Another Test",
+        "perl_module": "DDG::Lontail::AnotherTest",
+        "producer": null,
+        "production_state": "offline",
+        "repo": "fathead",
+        "signal_from": "just_another_test",
+        "src_domain": "how about there",
+        "src_id": null,
+        "src_name": "hi there",
+        "src_options": {
+          "directory": "",
+          "is_fanon": 0,
+          "is_mediawiki": 0,
+          "is_wikipedia": 0,
+          "language": "",
+          "min_abstract_length": null,
+          "skip_abstract": 0,
+          "skip_abstract_paren": 0,
+          "skip_icon": 0,
+          "skip_image_name": 0,
+          "skip_qr": "",
+          "src_info": "",
+          "src_skip": ""
+        },
+        "src_url": "Hello there",
+        "status": null,
+        "tab": "is this source",
+        "topic": [],
+        "unsafe": null
+      }
+    }
+  },
+  {
+    "url": "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=vue+3+composition+api&srlimit=5&format=json&formatversion=2&utf8=1",
+    "status": 200,
+    "body": {
+      "batchcomplete": true,
+      "continue": {
+        "sroffset": 5,
+        "continue": "-||"
+      },
+      "query": {
+        "searchinfo": {
+          "totalhits": 17,
+          "suggestion": "vue 3 competition api",
+          "suggestionsnippet": "vue 3 <em>competition</em> api"
+        },
+        "search": [
+          {
+            "ns": 0,
+            "title": "Vue.js",
+            "pageid": 50978621,
+            "size": 37276,
+            "wordcount": 3276,
+            "snippet": "team members. <span class=\"searchmatch\">Vue</span> features an incrementally adaptable architecture that focuses on declarative rendering and component <span class=\"searchmatch\">composition</span>. <span class=\"searchmatch\">Vue</span>.js features an",
+            "timestamp": "2026-10-13T15:14:18Z"
+          },
+          {
+            "ns": 0,
+            "title": "Nuxt",
+            "pageid": 57709652,
+            "size": 9600,
+            "wordcount": 852,
+            "snippet": "/pages/admin/[[page]].<span class=\"searchmatch\">vue</span> - Matches /admin in addition to all routes directly under it. Nuxt automatically imports most <span class=\"searchmatch\">Vue</span> <span class=\"searchmatch\">composition</span> <span class=\"searchmatch\">API</span> functions, and any",
+            "timestamp": "2026-10-13T06:23:57Z"
+          },
+          {
+            "ns": 0,
+            "title": "Vuex",
+            "pageid": 73394729,
+            "size": 7513,
+            "wordcount": 805,
+            "snippet": "ways. First, Pinia uses a more modern <span class=\"searchmatch\">API</span> and is able to leverage the capabilities of the <span class=\"searchmatch\">Composition</span> <span class=\"searchmatch\">API</span> in <span class=\"searchmatch\">Vue</span>.js <span class=\"searchmatch\">3</span>. Pinia has a smaller codebase and different",
+            "timestamp": "2026-07-23T23:37:42Z"
+          },
+          {
+            "ns": 0,
+            "title": "Port Vue, Pennsylvania",
+            "pageid": 131160,
+            "size": 20689,
+            "wordcount": 1080,
+            "snippet": "04 square miles (0.10 km2), or <span class=\"searchmatch\">3</span>.54%, is water. Port <span class=\"searchmatch\">Vue</span> is served by the South Allegheny School District. The Port <span class=\"searchmatch\">Vue</span> Police Department is based at 1194",
+            "timestamp": "2026-10-06T21:24:27Z"
+          },
+          {
+            "ns": 0,
+            "title": "At sign",
+            "pageid": 710197,
+            "size": 59245,
+            "wordcount": 5634,
+            "snippet": "Language Specification Version <span class=\"searchmatch\">3</span>.0&quot;. Microsoft Download Center. Archived from the original on 2022-01-26. Retrieved 2013-10-29. &quot;<span class=\"searchmatch\">Vue</span>.js&quot;. vuejs.org. Retrieved",
+            "timestamp": "2026-09-27T22:31:26Z"
+          }
+        ]
+      }
+    }
+  }
+]

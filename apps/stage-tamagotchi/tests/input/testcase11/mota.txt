@@ -1,0 +1,18 @@
+testcase11 — request không có tin system: persona rỗng, không lỗi
+=================================================================
+
+MỤC ĐÍCH
+    Chốt nhánh không có system prompt (client khác AIRI, hoặc card trống).
+
+ĐẦU VÀO
+    request    = một tin user duy nhất, không stream
+    authorized = true
+
+KỲ VỌNG
+    prompt.json   : systemPrompt = "" (chuỗi rỗng); transport Claude bỏ qua
+                    chuỗi rỗng nên không thêm --append-system-prompt
+    response.json : 200, content = "ok"
+
+VÌ SAO QUAN TRỌNG
+    Tránh trường hợp gửi "--append-system-prompt" kèm giá trị rỗng, hoặc ném
+    lỗi khi messages không có tin system nào.

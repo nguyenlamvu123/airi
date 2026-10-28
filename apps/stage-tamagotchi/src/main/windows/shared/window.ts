@@ -40,7 +40,7 @@ import {
 } from '../../../shared/eventa'
 import { agentBackendManager } from '../../libs/agent/manager'
 import { listAgentBackends } from '../../libs/agent/registry'
-import { fetchDuckDuckGoResults } from '../../libs/duckduckgo'
+import { searchWeb } from '../../libs/web-search'
 import { createServerChannelService } from '../../services/airi/channel-server'
 import { createI18nService } from '../../services/airi/i18n'
 import { createAppService, createPowerMonitorService, createScreenService, createSystemPreferencesService, createWindowService } from '../../services/electron'
@@ -285,13 +285,13 @@ export async function setupBaseWindowElectronInvokes(params: {
     }
   })
 
-  // Builtin web search: DuckDuckGo Instant Answer behind the "duyệt web" keyword.
+  // Builtin web search behind the "duyệt web" keyword (DuckDuckGo Instant Answer + Wikipedia).
   defineInvokeHandler(params.context, electronSearchWeb, async ({ query }): Promise<WebSearchResultsResult> => {
     const trimmed = query.trim()
     if (!trimmed)
       return { ok: false, error: 'Search query is empty' }
     try {
-      const results = await fetchDuckDuckGoResults(trimmed)
+      const results = await searchWeb(trimmed)
       return { ok: true, query: trimmed, results }
     }
     catch (error) {

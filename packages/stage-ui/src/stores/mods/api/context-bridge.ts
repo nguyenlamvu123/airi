@@ -41,6 +41,21 @@ export function normalizeContextSnapshot<C extends Pick<ChatStreamEventContext, 
   }
 }
 
+/** Host policy for {@link useContextBridgeStore}'s `initialize`. */
+export interface ContextBridgeInitializeOptions {
+  /**
+   * Answer `input:text` from the server channel (Discord bot, Twitter
+   * service, plugins, ...) as a chat turn on the active provider.
+   *
+   * Off on every host unless it opts in: only the local user's own messages
+   * may spend tokens or drive the agent, and each remote text is an LLM call
+   * nobody at the machine made.
+   *
+   * @default false
+   */
+  acceptRemoteTextInput?: boolean
+}
+
 export const useContextBridgeStore = defineStore('mods:api:context-bridge', () => {
   const consumerRegistrationEvents = [
     'input:text',
@@ -374,15 +389,23 @@ export const useContextBridgeStore = defineStore('mods:api:context-bridge', () =
     return await callback()
   }
 
-  async function initialize() {
+  async function initialize(options?: ContextBridgeInitializeOptions) {
     await mutex.acquire()
 
     try {
       if (initialized)
         return
 
+      const acceptRemoteTextInput = options?.acceptRemoteTextInput ?? false
+      // A host that refuses remote text must not join the `chat-ingestion`
+      // group for it either, or the server would keep routing those messages
+      // here to be dropped instead of to a consumer that answers them.
+      const consumerEvents = acceptRemoteTextInput
+        ? consumerRegistrationEvents
+        : consumerRegistrationEvents.filter(event => event !== 'input:text')
+
       const registerConsumers = () => {
-        for (const consumerEvent of consumerRegistrationEvents) {
+        for (const consumerEvent of consumerEvents) {
           serverChannelStore.send({
             type: 'module:consumer:register',
             data: {
@@ -557,6 +580,12 @@ export const useContextBridgeStore = defineStore('mods:api:context-bridge', () =
       }))
 
       disposeHookFns.value.push(serverChannelStore.onEvent('input:text', async (event) => {
+        // Unregistered hosts can still receive broadcast copies; drop them too.
+        if (!acceptRemoteTextInput) {
+          console.info('[context-bridge] ignored remote input:text from', event.source, '(acceptRemoteTextInput is off)')
+          return
+        }
+
         const {
           text,
           textRaw,

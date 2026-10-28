@@ -1,0 +1,4 @@
+[
+  "https://api.duckduckgo.com/?q=kyoto&format=json&no_html=1&skip_disambig=1&t=airi",
+  "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=kyoto&srlimit=5&format=json&formatversion=2&utf8=1"
+]

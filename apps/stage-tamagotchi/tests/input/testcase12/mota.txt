@@ -1,0 +1,18 @@
+testcase12 — request không có token bị từ chối, agent không chạy
+================================================================
+
+MỤC ĐÍCH
+    Chốt việc proxy chặn request thiếu Bearer token TRƯỚC khi chạm agent.
+
+ĐẦU VÀO
+    request    = như testcase10
+    authorized = false (không gửi header Authorization)
+
+KỲ VỌNG
+    response.json : 401, error "Missing or invalid bearer token"
+    KHÔNG có prompt.json, tức transport không được gọi
+
+VÌ SAO QUAN TRỌNG
+    Từ bản sửa H5, system prompt và tin user đi thẳng vào agent có quyền đọc
+    file. Mọi tiến trình hay trang web dò ra cổng proxy đều không được lái
+    agent (mục S1 của báo cáo).

@@ -46,9 +46,11 @@ async function handleSend() {
   try {
     await hideSpotlightWindow()
     const result = await chatSyncStore.requestSpotlightIngest({ text })
-    await showResultNotification({
-      body: result.visibleText.trim(),
-    })
+    // Empty for built-in commands such as "duyệt file": they open a panel in
+    // the main window rather than answering.
+    const body = result.visibleText.trim()
+    if (body)
+      await showResultNotification({ body })
   }
   catch (error) {
     await showResultNotification({

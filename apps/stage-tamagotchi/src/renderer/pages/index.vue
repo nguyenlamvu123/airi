@@ -24,7 +24,6 @@ import { WidgetStage } from '@proj-airi/stage-ui/components/scenes'
 import { useVoiceInputSession } from '@proj-airi/stage-ui/composables'
 import { useCanvasPixelIsTransparentAtPoint } from '@proj-airi/stage-ui/composables/canvas-alpha'
 import { useSpeakingStore } from '@proj-airi/stage-ui/stores/audio'
-import { useChatOrchestratorStore } from '@proj-airi/stage-ui/stores/chat'
 import { useHearingSpeechInputPipeline, useHearingStore } from '@proj-airi/stage-ui/stores/modules/hearing'
 import { useOnboardingStore } from '@proj-airi/stage-ui/stores/onboarding'
 import { useSettings, useSettingsAudioDevice } from '@proj-airi/stage-ui/stores/settings'
@@ -33,17 +32,15 @@ import { storeToRefs } from 'pinia'
 import { computed, onMounted, onUnmounted, ref, shallowRef, toRef, watch } from 'vue'
 import { toast } from 'vue-sonner'
 
+import AgentBackendIndicator from '../components/stage-islands/agent-backend-indicator/index.vue'
 import ControlsIsland from '../components/stage-islands/controls-island/index.vue'
 import FileBrowserPanel from '../components/stage-islands/file-browser-panel/index.vue'
 import ResourceStatusIsland from '../components/stage-islands/resource-status-island/index.vue'
 import StatusIsland from '../components/stage-islands/status-island/index.vue'
-import AgentBackendIndicator from '../components/stage-islands/agent-backend-indicator/index.vue'
 import WebSearchPanel from '../components/stage-islands/web-search-panel/index.vue'
 
 import { electronOpenOnboarding } from '../../shared/eventa'
 import { modelSettingsRuntimeSnapshotChannelName } from '../../shared/model-settings-runtime'
-import { matchFileBrowserCommand } from '../libs/file-browser-core'
-import { parseSearchCommand } from '../libs/web-search-core'
 import { useChatSyncStore } from '../stores/chat-sync'
 import { useControlsIslandStore } from '../stores/controls-island'
 import { useFileBrowserStore } from '../stores/file-browser'
@@ -310,7 +307,6 @@ const hearingPipeline = useHearingSpeechInputPipeline()
 const { transcribeForMediaStream, stopStreamingTranscription } = hearingPipeline
 const { error: transcriptionError, supportsStreamInput } = storeToRefs(hearingPipeline)
 const chatSyncStore = useChatSyncStore()
-const chatOrchestrator = useChatOrchestratorStore()
 const streamingTranscriptionUnavailable = ref(false)
 const shouldUseStreamInput = computed(() => supportsStreamInput.value && !!stream.value && !streamingTranscriptionUnavailable.value)
 const voiceTranscriptBuffer = createTranscriptBuffer({
@@ -655,32 +651,13 @@ watch(nowSpeaking, async (speaking) => {
   scheduleAssistantSpeechResume()
 })
 
-let unsubscribeChatCommands: (() => void) | undefined
-
 onMounted(() => {
   if (onboardingStore.needsOnboarding) {
     openOnboarding()
   }
-
-  // Builtin chat commands: literal "duyệt file" opens the file browser, while
-  // "duyệt web: <query>" runs a web search. Both triggers live in states.json
-  // (@command: entries) so users can rename them. Hooked into the authority
-  // orchestrator so messages sent from the chat or spotlight windows (routed
-  // through chat-sync) land here too.
-  unsubscribeChatCommands = chatOrchestrator.onBeforeMessageComposed(async (message) => {
-    if (matchFileBrowserCommand(message)) {
-      await fileBrowserStore.openBrowser()
-      return
-    }
-
-    const query = parseSearchCommand(message)
-    if (query)
-      await webSearchStore.search(query)
-  })
 })
 
 onUnmounted(() => {
-  unsubscribeChatCommands?.()
   postModelSettingsRuntimeEvent({
     type: 'owner-gone',
     ownerInstanceId: modelSettingsRuntimeOwnerInstanceId,

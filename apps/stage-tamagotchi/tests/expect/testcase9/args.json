@@ -1,0 +1,21 @@
+[
+  "-p",
+  "--output-format",
+  "stream-json",
+  "--verbose",
+  "--include-partial-messages",
+  "--tools",
+  "Read,Glob,Grep",
+  "--strict-mcp-config",
+  "--disable-slash-commands",
+  "--settings",
+  "{\"disableAllHooks\":true,\"permissions\":{\"deny\":[\"Read(**/.env)\",\"Read(**/.env.*)\"]}}",
+  "--permission-mode",
+  "dontAsk",
+  "--resume",
+  "49f03e18-f042-42a3-92fb-9e6f9a9658a7",
+  "--append-system-prompt",
+  "Bạn là AIRI, một cô gái ảo nói tiếng Việt, trả lời ngắn gọn bằng văn nói.\nKhông dùng markdown hay code block.\nĐánh dấu cảm xúc bằng <|EMOTE_HAPPY|> trước câu vui.",
+  "--",
+  "Hôm nay bạn thế nào?"
+]

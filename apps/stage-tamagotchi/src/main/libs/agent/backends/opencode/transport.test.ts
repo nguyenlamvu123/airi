@@ -3,7 +3,7 @@ import type { OpencodeStreamEvent } from './events'
 
 import { describe, expect, it, vi } from 'vitest'
 
-import { ALLOW_ALL_PERMISSIONS, createOpencodeTransport } from './transport'
+import { createOpencodeTransport, READ_ONLY_PERMISSIONS } from './transport'
 
 const SESSION = 'ses_1'
 
@@ -20,7 +20,7 @@ function fakeClient(overrides: Partial<OpencodeClient>): OpencodeClient {
 
 describe('createOpencodeTransport', () => {
   it('reuses a resumed session when the server still knows it', async () => {
-    const client = fakeClient({ listSessions: vi.fn(async () => [{ id: 'ses_known' }]) })
+    const client = fakeClient({ listSessions: vi.fn(async () => [{ id: 'ses_known', permission: READ_ONLY_PERMISSIONS }]) })
     const transport = createOpencodeTransport('http://127.0.0.1:1', client)
 
     const session = await transport.createSession({ resumeSessionID: 'ses_known' })
@@ -36,7 +36,7 @@ describe('createOpencodeTransport', () => {
     const session = await transport.createSession({ resumeSessionID: 'ses_missing' })
 
     expect(session.id).toBe(SESSION)
-    expect(client.createSession).toHaveBeenCalledWith({ title: 'AIRI', permission: ALLOW_ALL_PERMISSIONS })
+    expect(client.createSession).toHaveBeenCalledWith({ title: 'AIRI', permission: READ_ONLY_PERMISSIONS })
   })
 
   it('falls back to creating a session when listing fails', async () => {

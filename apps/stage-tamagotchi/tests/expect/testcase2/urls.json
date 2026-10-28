@@ -1,0 +1,4 @@
+[
+  "https://api.duckduckgo.com/?q=vue+3+composition+api&format=json&no_html=1&skip_disambig=1&t=airi",
+  "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=vue+3+composition+api&srlimit=5&format=json&formatversion=2&utf8=1"
+]

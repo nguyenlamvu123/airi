@@ -1,5 +1,7 @@
 import type { WebSearchResult } from '../../shared/eventa'
 
+import { duckDuckGoResultsUrl } from '../../shared/web-search'
+
 const MAX_RESULTS = 5
 
 interface DuckDuckGoRelatedTopic {
@@ -46,7 +48,7 @@ export function parseDuckDuckGoInstantAnswer(payload: unknown, query: string): W
 
   const data = payload as DuckDuckGoInstantAnswer
   const results: WebSearchResult[] = []
-  const resultsUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}`
+  const resultsUrl = duckDuckGoResultsUrl(query)
 
   const abstractText = data.AbstractText?.trim()
   if (abstractText) {
@@ -84,7 +86,7 @@ export function parseDuckDuckGoInstantAnswer(payload: unknown, query: string): W
  * Queries the DuckDuckGo Instant Answer API and returns up to 5 results.
  * The "t" parameter identifies the requesting application to DuckDuckGo.
  */
-export async function fetchDuckDuckGoResults(query: string): Promise<WebSearchResult[]> {
+export async function fetchDuckDuckGoResults(query: string, signal?: AbortSignal): Promise<WebSearchResult[]> {
   const url = new URL('https://api.duckduckgo.com/')
   url.searchParams.set('q', query)
   url.searchParams.set('format', 'json')
@@ -92,7 +94,7 @@ export async function fetchDuckDuckGoResults(query: string): Promise<WebSearchRe
   url.searchParams.set('skip_disambig', '1')
   url.searchParams.set('t', 'airi')
 
-  const response = await fetch(url)
+  const response = await fetch(url, { signal })
   if (!response.ok)
     throw new Error(`DuckDuckGo request failed with status ${response.status}`)
 

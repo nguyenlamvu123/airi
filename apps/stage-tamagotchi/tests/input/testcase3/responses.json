@@ -1,0 +1,475 @@
+[
+  {
+    "url": "https://api.duckduckgo.com/?q=kyoto&format=json&no_html=1&skip_disambig=1&t=airi",
+    "status": 200,
+    "body": {
+      "Abstract": "Kyoto, officially Kyoto City, is the capital city of Kyoto Prefecture in the Kansai region of Japan's largest and most populous island of Honshu. As of 2020, the city had a population of 1.46 million, making it the ninth-most populous city in Japan. More than half of Kyoto Prefecture's population resides in the city. The city is the cultural anchor of the substantially larger Greater Kyoto, a metropolitan statistical area home to approximately 3.8 million people. It is also part of the even larger Keihanshin metropolitan area, along with Osaka and Kobe. Kyoto is one of the oldest municipalities in Japan, having been chosen in 794 as the new seat of Japan's imperial court by Emperor Kanmu. The original city, named Heian-kyō, was arranged in accordance with traditional Chinese feng shui following the model of the ancient Chinese capital of Chang'an. The emperors of Japan ruled from Kyoto in the following eleven centuries until 1869.",
+      "AbstractSource": "Wikipedia",
+      "AbstractText": "Kyoto, officially Kyoto City, is the capital city of Kyoto Prefecture in the Kansai region of Japan's largest and most populous island of Honshu. As of 2020, the city had a population of 1.46 million, making it the ninth-most populous city in Japan. More than half of Kyoto Prefecture's population resides in the city. The city is the cultural anchor of the substantially larger Greater Kyoto, a metropolitan statistical area home to approximately 3.8 million people. It is also part of the even larger Keihanshin metropolitan area, along with Osaka and Kobe. Kyoto is one of the oldest municipalities in Japan, having been chosen in 794 as the new seat of Japan's imperial court by Emperor Kanmu. The original city, named Heian-kyō, was arranged in accordance with traditional Chinese feng shui following the model of the ancient Chinese capital of Chang'an. The emperors of Japan ruled from Kyoto in the following eleven centuries until 1869.",
+      "AbstractURL": "https://en.wikipedia.org/wiki/Kyoto",
+      "Answer": "",
+      "AnswerType": "",
+      "Definition": "",
+      "DefinitionSource": "",
+      "DefinitionURL": "",
+      "Entity": "location",
+      "Heading": "Kyoto",
+      "Image": "/i/b7b30e3fcec58c5b.png",
+      "ImageHeight": 270,
+      "ImageIsLogo": 0,
+      "ImageWidth": 405,
+      "Infobox": {
+        "content": [
+          {
+            "data_type": "string",
+            "label": "Country",
+            "value": "Japan",
+            "wiki_order": 0
+          },
+          {
+            "data_type": "string",
+            "label": "Region",
+            "value": "Kansai",
+            "wiki_order": 1
+          },
+          {
+            "data_type": "string",
+            "label": "Prefecture",
+            "value": "Kyoto Prefecture",
+            "wiki_order": 2
+          },
+          {
+            "data_type": "string",
+            "label": "Island",
+            "value": "Honshu",
+            "wiki_order": 3
+          },
+          {
+            "data_type": "string",
+            "label": "Founded",
+            "value": "794",
+            "wiki_order": 4
+          },
+          {
+            "data_type": "string",
+            "label": "Type",
+            "value": "Mayor–council",
+            "wiki_order": 5
+          },
+          {
+            "data_type": "string",
+            "label": "Body",
+            "value": "Kyoto City Assembly",
+            "wiki_order": 6
+          },
+          {
+            "data_type": "string",
+            "label": "Mayor",
+            "value": "Kōji Matsui",
+            "wiki_order": 7
+          },
+          {
+            "data_type": "string",
+            "label": "Total",
+            "value": "1,431,419",
+            "wiki_order": 8
+          },
+          {
+            "data_type": "string",
+            "label": "Rank",
+            "value": "9th in Japan",
+            "wiki_order": 9
+          },
+          {
+            "data_type": "string",
+            "label": "Metro",
+            "value": "3,783,014",
+            "wiki_order": 10
+          },
+          {
+            "data_type": "string",
+            "label": "Website",
+            "value": "city.kyoto.lg.jp",
+            "wiki_order": 11
+          },
+          {
+            "data_type": "instagram_profile",
+            "label": "Instagram profile",
+            "value": "kyotonobunkaisan",
+            "wiki_order": "103"
+          },
+          {
+            "data_type": "youtube_channel",
+            "label": "Youtube channel",
+            "value": "UCYqE10A6IdM9RaLBQQCQKdw",
+            "wiki_order": "105"
+          },
+          {
+            "data_type": "coordinates",
+            "label": "Coordinates",
+            "value": {
+              "altitude": null,
+              "globe": "http://www.wikidata.org/entity/Q2",
+              "latitude": 35.0116111111111,
+              "longitude": 135.768111111111,
+              "precision": 2.77777777777778e-05
+            },
+            "wiki_order": "205"
+          },
+          {
+            "data_type": "area",
+            "label": "Area",
+            "value": {
+              "amount": "+827.83",
+              "unit": "http://www.wikidata.org/entity/Q712226"
+            },
+            "wiki_order": "206"
+          },
+          {
+            "data_type": "instance",
+            "label": "Instance of",
+            "value": {
+              "entity-type": "item",
+              "id": "Q1749269",
+              "numeric-id": 1749269
+            },
+            "wiki_order": "207"
+          },
+          {
+            "data_type": "instance_2",
+            "label": "Instance of",
+            "value": {
+              "entity-type": "item",
+              "id": "Q65589340",
+              "numeric-id": 65589340
+            },
+            "wiki_order": "207"
+          },
+          {
+            "data_type": "instance_3",
+            "label": "Instance of",
+            "value": {
+              "entity-type": "item",
+              "id": "Q1549591",
+              "numeric-id": 1549591
+            },
+            "wiki_order": "207"
+          },
+          {
+            "data_type": "instance_4",
+            "label": "Instance of",
+            "value": {
+              "entity-type": "item",
+              "id": "Q494721",
+              "numeric-id": 494721
+            },
+            "wiki_order": "207"
+          },
+          {
+            "data_type": "instance_5",
+            "label": "Instance of",
+            "value": {
+              "entity-type": "item",
+              "id": "Q1200957",
+              "numeric-id": 1200957
+            },
+            "wiki_order": "207"
+          },
+          {
+            "data_type": "instance_6",
+            "label": "Instance of",
+            "value": {
+              "entity-type": "item",
+              "id": "Q129268952",
+              "numeric-id": 129268952
+            },
+            "wiki_order": "207"
+          },
+          {
+            "data_type": "instance_7",
+            "label": "Instance of",
+            "value": {
+              "entity-type": "item",
+              "id": "Q1187811",
+              "numeric-id": 1187811
+            },
+            "wiki_order": "207"
+          },
+          {
+            "data_type": "instance_8",
+            "label": "Instance of",
+            "value": {
+              "entity-type": "item",
+              "id": "Q11422368",
+              "numeric-id": 11422368
+            },
+            "wiki_order": "207"
+          },
+          {
+            "data_type": "wd_description",
+            "label": "Wikidata description",
+            "value": "city in the Kyōto Prefecture, Japan",
+            "wiki_order": "210"
+          },
+          {
+            "data_type": "wikidata_id",
+            "label": "Wikidata id",
+            "value": "Q34600",
+            "wiki_order": "211"
+          },
+          {
+            "data_type": "wikidata_label",
+            "label": "Wikidata label",
+            "value": "Kyoto",
+            "wiki_order": "212"
+          },
+          {
+            "data_type": "wikidata_aliases",
+            "label": "Wikidata aliases",
+            "value": [
+              "Kyoto",
+              "Kyoto City",
+              "Meacum",
+              "Meako"
+            ],
+            "wiki_order": "213"
+          },
+          {
+            "data_type": "wiki_maps_trigger",
+            "value": "/local.js?&ha=1&lla=135.768111111111,35.0116111111111:100&heading=Kyoto&q=kyoto",
+            "wiki_order": 999
+          }
+        ],
+        "meta": [
+          {
+            "data_type": "string",
+            "label": "article_title",
+            "value": "Kyoto"
+          },
+          {
+            "data_type": "string",
+            "label": "template_name",
+            "value": "infobox settlement"
+          }
+        ]
+      },
+      "OfficialDomain": "kyoto.lg.jp",
+      "OfficialWebsite": "https://www.city.kyoto.lg.jp/",
+      "Redirect": "",
+      "RelatedTopics": [
+        {
+          "FirstURL": "https://duckduckgo.com/c/Kyoto",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Kyoto\">Kyoto Category</a>",
+          "Text": "Kyoto Category"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/Outline_of_Kyoto",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/Outline_of_Kyoto\">Outline of Kyoto</a> - The following outline is provided as an overview of and topical guide to Kyoto: Kyoto – capital city of Kyoto Prefecture, located in the Kansai region of Japan.",
+          "Text": "Outline of Kyoto - The following outline is provided as an overview of and topical guide to Kyoto: Kyoto – capital city of Kyoto Prefecture, located in the Kansai region of Japan."
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Environmental_model_cities",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Environmental_model_cities\">Environmental model cities</a>",
+          "Text": "Environmental model cities"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Former_capitals_of_Japan",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Former_capitals_of_Japan\">Former capitals of Japan</a>",
+          "Text": "Former capitals of Japan"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Kansai_region",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Kansai_region\">Kansai region</a>",
+          "Text": "Kansai region"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Populated_places_established_in_the_8th_century",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Populated_places_established_in_the_8th_century\">Populated places established in the 8th century</a>",
+          "Text": "Populated places established in the 8th century"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Holy_cities",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Holy_cities\">Holy cities</a>",
+          "Text": "Holy cities"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Ancient_cities",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Ancient_cities\">Ancient cities</a>",
+          "Text": "Ancient cities"
+        }
+      ],
+      "Results": [
+        {
+          "FirstURL": "https://www.city.kyoto.lg.jp/",
+          "Icon": {
+            "Height": 16,
+            "URL": "/i/city.kyoto.lg.jp.ico",
+            "Width": 16
+          },
+          "Result": "<a href=\"https://www.city.kyoto.lg.jp/\">Official site</a><a href=\"https://www.city.kyoto.lg.jp/\"></a>",
+          "Text": "Official site"
+        }
+      ],
+      "Type": "A",
+      "meta": {
+        "attribution": null,
+        "blockgroup": null,
+        "created_date": null,
+        "description": "Wikipedia",
+        "designer": null,
+        "dev_date": null,
+        "dev_milestone": "live",
+        "developer": [
+          {
+            "name": "DDG Team",
+            "type": "ddg",
+            "url": "http://www.duckduckhack.com"
+          }
+        ],
+        "example_query": "nikola tesla",
+        "id": "wikipedia_fathead",
+        "is_stackexchange": null,
+        "js_callback_name": "wikipedia",
+        "live_date": null,
+        "maintainer": {
+          "github": "duckduckgo"
+        },
+        "name": "Wikipedia",
+        "perl_module": "DDG::Fathead::Wikipedia",
+        "producer": null,
+        "production_state": "online",
+        "repo": "fathead",
+        "signal_from": "wikipedia_fathead",
+        "src_domain": "en.wikipedia.org",
+        "src_id": 1,
+        "src_name": "Wikipedia",
+        "src_options": {
+          "directory": "",
+          "is_fanon": 0,
+          "is_mediawiki": 1,
+          "is_wikipedia": 1,
+          "language": "en",
+          "min_abstract_length": "20",
+          "skip_abstract": 0,
+          "skip_abstract_paren": 0,
+          "skip_end": "0",
+          "skip_icon": 0,
+          "skip_image_name": 0,
+          "skip_qr": "",
+          "source_skip": "",
+          "src_info": ""
+        },
+        "src_url": null,
+        "status": "live",
+        "tab": "About",
+        "topic": [
+          "productivity"
+        ],
+        "unsafe": 0
+      }
+    }
+  },
+  {
+    "url": "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=kyoto&srlimit=5&format=json&formatversion=2&utf8=1",
+    "status": 200,
+    "body": {
+      "batchcomplete": true,
+      "continue": {
+        "sroffset": 5,
+        "continue": "-||"
+      },
+      "query": {
+        "searchinfo": {
+          "totalhits": 26382
+        },
+        "search": [
+          {
+            "ns": 0,
+            "title": "Kyoto",
+            "pageid": 37652,
+            "size": 79699,
+            "wordcount": 6586,
+            "snippet": "<span class=\"searchmatch\">Kyoto</span> (/ki.ˈoʊ.toʊ/ or /ˈkjoʊ.toʊ/; Japanese: 京都, <span class=\"searchmatch\">Kyōto</span> [k̟ʲjó̞ò̞.tò̞] ), officially <span class=\"searchmatch\">Kyoto</span> City (京都市, <span class=\"searchmatch\">Kyōto</span>-shi; [k̟ʲjò̞ó̞.tó̞.ɕì, k̟ʲjó̞ó̞-] , locally",
+            "timestamp": "2026-10-29T00:05:53Z"
+          },
+          {
+            "ns": 0,
+            "title": "Kyoto Protocol",
+            "pageid": 16775,
+            "size": 156934,
+            "wordcount": 13617,
+            "snippet": "The <span class=\"searchmatch\">Kyoto</span> Protocol (Japanese: 京都議定書, Hepburn: <span class=\"searchmatch\">Kyōto</span> Giteisho) was an international treaty which extended the 1992 United Nations Framework Convention",
+            "timestamp": "2026-09-13T01:44:04Z"
+          },
+          {
+            "ns": 0,
+            "title": "Kyoto Prefecture",
+            "pageid": 179770,
+            "size": 44271,
+            "wordcount": 2681,
+            "snippet": "<span class=\"searchmatch\">Kyoto</span> Prefecture (京都府, <span class=\"searchmatch\">Kyōto</span>-fu; Japanese pronunciation: [k̟ʲj̊ó̞ò̞.tò̞, k̟ʲj̊ò̞ó̞.tó̞.ɸɯ̈̀, k̟ʲj̊ó̞ó̞.tó̞-], locally [k̟ʲj̊ó̞ò̞.tò̞, k̟ʲj̊ó̞ó̞.tó̞.ɸù",
+            "timestamp": "2026-10-27T06:18:35Z"
+          },
+          {
+            "ns": 0,
+            "title": "Kyoto (disambiguation)",
+            "pageid": 14560862,
+            "size": 1104,
+            "wordcount": 161,
+            "snippet": "Look up <span class=\"searchmatch\">Kyoto</span> in Wiktionary, the free dictionary. <span class=\"searchmatch\">Kyoto</span> is a Japanese city, and the capital of <span class=\"searchmatch\">Kyoto</span> Prefecture. <span class=\"searchmatch\">Kyoto</span> may also refer to: <span class=\"searchmatch\">Kyoto</span> Prefecture",
+            "timestamp": "2026-09-30T15:20:27Z"
+          },
+          {
+            "ns": 0,
+            "title": "Kyoto Sanga FC",
+            "pageid": 1913508,
+            "size": 48413,
+            "wordcount": 1376,
+            "snippet": "<span class=\"searchmatch\">Kyoto</span> Sanga (京都サンガ) is a Japanese professional football club based in <span class=\"searchmatch\">Kyoto</span>. The club plays in the J1 League, the top tier of football in the country",
+            "timestamp": "2026-10-27T12:52:17Z"
+          }
+        ]
+      }
+    }
+  }
+]

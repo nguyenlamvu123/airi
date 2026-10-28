@@ -2,6 +2,7 @@ import type { ElectronDirectoryEntry } from '../../shared/eventa'
 
 import { defineInvoke } from '@moeru/eventa'
 import { createContext } from '@moeru/eventa/adapters/electron/renderer'
+import { errorMessageFrom } from '@moeru/std'
 import { defineStore } from 'pinia'
 import { ref, shallowRef } from 'vue'
 
@@ -36,23 +37,39 @@ export const useFileBrowserStore = defineStore('stage-tamagotchi:file-browser', 
   const entries = shallowRef<ElectronDirectoryEntry[]>([])
   const history = shallowRef<string[]>([])
 
+  // Bumped per listing so a slow response cannot overwrite a newer directory.
+  let loadRequest = 0
+
+  // Never rejects: callers fire it without awaiting (see chat-sync), so IPC
+  // failures land in `errorMessage` and the spinner always stops.
   async function loadDirectory(path: string): Promise<void> {
     if (!path)
       return
 
+    const request = ++loadRequest
     isLoading.value = true
     errorMessage.value = undefined
 
-    const result = await getFileBrowserInvokers().listDirectory({ path })
-    if (!result.ok) {
-      errorMessage.value = result.error
-      isLoading.value = false
-      return
-    }
+    try {
+      const result = await getFileBrowserInvokers().listDirectory({ path })
+      if (request !== loadRequest)
+        return
+      if (!result.ok) {
+        errorMessage.value = result.error
+        return
+      }
 
-    currentPath.value = result.path
-    entries.value = result.entries
-    isLoading.value = false
+      currentPath.value = result.path
+      entries.value = result.entries
+    }
+    catch (error) {
+      if (request === loadRequest)
+        errorMessage.value = errorMessageFrom(error) ?? 'Failed to list the directory'
+    }
+    finally {
+      if (request === loadRequest)
+        isLoading.value = false
+    }
   }
 
   async function navigateTo(path: string): Promise<void> {
@@ -64,11 +81,17 @@ export const useFileBrowserStore = defineStore('stage-tamagotchi:file-browser', 
   }
 
   async function openBrowser(): Promise<void> {
-    const home = await getFileBrowserInvokers().getHomeDirectory()
-    homePath.value = home.path
     history.value = []
     isOpen.value = true
-    await loadDirectory(home.path)
+    errorMessage.value = undefined
+    try {
+      const home = await getFileBrowserInvokers().getHomeDirectory()
+      homePath.value = home.path
+      await loadDirectory(home.path)
+    }
+    catch (error) {
+      errorMessage.value = errorMessageFrom(error) ?? 'Failed to open the file browser'
+    }
   }
 
   function close(): void {

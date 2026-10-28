@@ -1,0 +1,4 @@
+[
+  "https://api.duckduckgo.com/?q=H%E1%BB%93+Ch%C3%AD+Minh&format=json&no_html=1&skip_disambig=1&t=airi",
+  "https://vi.wikipedia.org/w/api.php?action=query&list=search&srsearch=H%E1%BB%93+Ch%C3%AD+Minh&srlimit=5&format=json&formatversion=2&utf8=1"
+]

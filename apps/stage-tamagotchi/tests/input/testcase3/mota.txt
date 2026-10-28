@@ -1,0 +1,19 @@
+testcase3 — DuckDuckGo có abstract, Wikipedia trùng link: chỉ giữ một bản
+=========================================================================
+
+MỤC ĐÍCH
+    Chốt thứ tự ưu tiên và việc bỏ trùng URL khi hai nguồn cùng có kết quả.
+
+ĐẦU VÀO
+    query     = "kyoto"
+    responses = payload THẬT 29/10/2026: DuckDuckGo có AbstractText (nguồn
+                https://en.wikipedia.org/wiki/Kyoto) và RelatedTopics;
+                en.wikipedia.org có bài "Kyoto" cùng URL
+
+KỲ VỌNG
+    result : abstract của DuckDuckGo đứng đầu; bài "Kyoto" từ Wikipedia KHÔNG
+             xuất hiện lần hai; tổng tối đa 8 kết quả
+
+VÌ SAO QUAN TRỌNG
+    Abstract là câu trả lời trực tiếp nhất nên phải đứng đầu. Hiện hai dòng
+    cùng một link là panel trông như lỗi.

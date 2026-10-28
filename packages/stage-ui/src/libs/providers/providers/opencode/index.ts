@@ -21,7 +21,12 @@ const opencodeConfigSchema = z.object({
     .default(DEFAULT_OPENCODE_BASE_URL),
 })
 
-type OpencodeConfig = z.input<typeof opencodeConfigSchema>
+/**
+ * `apiKey` is the bridge's per-launch bearer token, written by the desktop app
+ * at boot. It stays out of the schema on purpose: the settings page renders
+ * every schema field, and users must not be asked to type it.
+ */
+type OpencodeConfig = z.input<typeof opencodeConfigSchema> & { apiKey?: string }
 
 /**
  * Chat provider that proxies to a local `opencode` agent session.
@@ -39,7 +44,7 @@ export const providerOpencode = defineProvider<OpencodeConfig>({
   descriptionLocalize: ({ t }) => t('settings.pages.providers.provider.opencode.description'),
   tasks: ['chat'],
   icon: 'i-lobe-icons:opencode',
-  // The bridge needs no API key: it talks to a locally spawned opencode server.
+  // Users enter no credentials: the bridge token is filled in by the desktop app.
   requiresCredentials: false,
 
   createProviderConfig: ({ t }) => opencodeConfigSchema.extend({
@@ -50,8 +55,7 @@ export const providerOpencode = defineProvider<OpencodeConfig>({
     }),
   }),
   createProvider(config) {
-    // No API key: the local bridge ignores it.
-    return createOpenAI('', config.baseUrl)
+    return createOpenAI(config.apiKey ?? '', config.baseUrl)
   },
 
   // The bridge is managed by the desktop main process, so we never gate the

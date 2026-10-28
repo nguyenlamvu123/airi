@@ -1,0 +1,23 @@
+testcase10 — proxy gom mọi tin system thành persona cho agent (H5)
+==================================================================
+
+MỤC ĐÍCH
+    Chốt H5 ở tầng proxy: agent nhận tin user CUỐI CÙNG cùng toàn bộ system
+    prompt của AIRI.
+
+ĐẦU VÀO
+    request = body OpenAI giống AIRI gửi: 2 tin system (một dạng chuỗi, một
+              dạng mảng parts), lịch sử user/assistant, tin user cuối gồm text
+              và một ảnh
+    authorized = true (có Bearer token của proxy)
+
+KỲ VỌNG
+    prompt.json   : transport nhận đúng 1 lượt: sessionID "ses_golden",
+                    text = "file README nói gì?" (ảnh bị bỏ), systemPrompt = hai
+                    tin system nối bằng một dòng trống
+    response.json : 200, content = câu trả lời của agent
+
+VÌ SAO QUAN TRỌNG
+    Lịch sử nằm trong session của agent nên chỉ gửi tin cuối là đúng, nhưng
+    persona thì agent không có: phải gửi lại mỗi lượt. Ảnh và tool của AIRI
+    vẫn bị bỏ, đó là giới hạn đã ghi trong JSDoc của proxy.

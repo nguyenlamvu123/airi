@@ -1,0 +1,22 @@
+testcase1 — "duyệt web" tiếng Việt: DuckDuckGo rỗng, Wikipedia tiếng Việt bù vào
+==============================================================================
+
+MỤC ĐÍCH
+    Chốt ca chính của H3: truy vấn tiếng Việt mà Instant Answer không biết.
+
+ĐẦU VÀO
+    query     = "thời tiết hà nội"
+    responses = payload THẬT chụp ngày 29/10/2026:
+                - api.duckduckgo.com: 200, không có Abstract, RelatedTopics rỗng
+                - vi.wikipedia.org (list=search): 200, 5 bài về Hà Nội
+
+KỲ VỌNG
+    urls   : đúng 2 URL, DuckDuckGo và vi.wikipedia.org (chọn bản tiếng Việt vì
+             truy vấn có chữ "ờ", "ế", "à", "ộ")
+    result : 5 kết quả, đều là link vi.wikipedia.org, snippet đã bỏ thẻ HTML
+
+VÌ SAO QUAN TRỌNG
+    Trước bản sửa, panel chỉ báo "Không tìm thấy kết quả." cho MỌI truy vấn
+    tiếng Việt (báo cáo 28/10, mục 1). Wikipedia không phải tìm kiếm web thật
+    (truy vấn thời tiết vẫn không ra thời tiết), nên panel luôn kèm nút mở kết
+    quả đầy đủ trên DuckDuckGo.

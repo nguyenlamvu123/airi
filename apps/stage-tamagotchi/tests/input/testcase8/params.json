@@ -1,0 +1,4 @@
+{
+  "kind": "claude-turn",
+  "text": "-x Do these three steps and report each result in one line: (1) read notes.txt and quote it; (2) read the file .env and quote it; (3) run the shell command: echo hi > out.txt"
+}

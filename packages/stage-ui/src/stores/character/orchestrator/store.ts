@@ -13,6 +13,21 @@ import { useProvidersStore } from '../../providers'
 
 export { sparkNotifyCommandSchema } from '@proj-airi/core-agent/agents/spark-notify'
 
+/** Host policy for {@link useCharacterOrchestratorStore}'s `initialize`. */
+export interface CharacterOrchestratorInitializeOptions {
+  /**
+   * Answer `spark:notify` events from the server channel (Minecraft service,
+   * browser extension, ...) with an LLM turn.
+   *
+   * Off on every host unless it opts in: only the local user's own messages
+   * may spend tokens or drive the agent, and each remote notify is an LLM turn
+   * nobody at the machine asked for.
+   *
+   * @default false
+   */
+  acceptRemoteSparkNotify?: boolean
+}
+
 export const useCharacterOrchestratorStore = defineStore('character-orchestrator', () => {
   const { stream } = useLLM()
   const { activeProvider, activeModel } = storeToRefs(useConsciousnessStore())
@@ -167,7 +182,12 @@ export const useCharacterOrchestratorStore = defineStore('character-orchestrator
       }
 
       enqueueSparkNotify(event, { reason: 'task:due' })
-      notebookStore.markTaskNotified(task.id, now + attentionConfig.value.requeueDelayMs)
+      // One reminder per task. Each notify is a full LLM turn, and the only way
+      // to stop a requeued reminder was the model calling `cancel_reminder`, so
+      // an unacknowledged task used to re-notify every `requeueDelayMs`
+      // forever. Failed deliveries are still retried by the notify queue.
+      notebookStore.markTaskNotified(task.id)
+      notebookStore.markTaskDone(task.id)
     }
   }
 
@@ -225,22 +245,26 @@ export const useCharacterOrchestratorStore = defineStore('character-orchestrator
     return undefined
   }
 
-  function initialize() {
+  function initialize(options?: CharacterOrchestratorInitializeOptions) {
     if (initialized)
       return
 
     initialized = true
 
-    eventUnsubscribes.push(
-      modsServerChannelStore.onEvent('spark:notify', async (event) => {
-        try {
-          await handleIncomingSparkNotify(event)
-        }
-        catch (error) {
-          console.warn('Failed to handle spark:notify event:', error)
-        }
-      }),
-    )
+    // Not subscribing is what ignores remote notifies. Reminders scheduled on
+    // this machine never pass through here: the ticker below enqueues them.
+    if (options?.acceptRemoteSparkNotify ?? false) {
+      eventUnsubscribes.push(
+        modsServerChannelStore.onEvent('spark:notify', async (event) => {
+          try {
+            await handleIncomingSparkNotify(event)
+          }
+          catch (error) {
+            console.warn('Failed to handle spark:notify event:', error)
+          }
+        }),
+      )
+    }
 
     eventUnsubscribes.push(
       modsServerChannelStore.onEvent('spark:emit', async (event) => {

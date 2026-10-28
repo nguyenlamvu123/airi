@@ -1,0 +1,14 @@
+{
+  "kind": "proxy",
+  "authorized": true,
+  "reply": "ok",
+  "request": {
+    "model": "agent",
+    "messages": [
+      {
+        "role": "user",
+        "content": "chỉ có tin user"
+      }
+    ]
+  }
+}

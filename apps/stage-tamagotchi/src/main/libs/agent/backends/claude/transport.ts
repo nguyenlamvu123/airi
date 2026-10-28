@@ -14,8 +14,6 @@ export interface ClaudeTransportOptions {
   command?: string
   /** Optional model override (`--model`). */
   model?: string
-  /** Extra instructions appended to Claude Code's system prompt. */
-  appendSystemPrompt?: string
 }
 
 /**
@@ -24,6 +22,21 @@ export interface ClaudeTransportOptions {
  * `--verbose` is required by Claude Code when combining `-p` with
  * `--output-format stream-json`; `--include-partial-messages` turns the answer
  * into incremental deltas so AIRI can stream it.
+ *
+ * The rest enforces AIRI's policy that an agent backend may read project files
+ * to answer and do nothing else:
+ * - `--tools Read,Glob,Grep` leaves only the read-only built-in tools, so no
+ *   shell, edits, web access or subagents exist to be called, whatever the
+ *   user's allow rules say.
+ * - `--strict-mcp-config` without `--mcp-config` loads no MCP server, which
+ *   also drops claude.ai connectors (mail, drive, ...).
+ * - `--disable-slash-commands` drops skills and custom commands.
+ * - `--settings` turns off every hook, so no user hook runs a command on each
+ *   turn, and denies `.env` reads so secrets never reach the model.
+ * - `--permission-mode dontAsk` pins the mode instead of inheriting the
+ *   user's default, which varies per machine (Claude Code 2.1.312 defaults to
+ *   `auto`). Anything that would need approval, such as reading outside the
+ *   working directory, is denied because a print-mode turn has no one to ask.
  */
 const CLAUDE_BASE_ARGS = [
   '-p',
@@ -31,6 +44,17 @@ const CLAUDE_BASE_ARGS = [
   'stream-json',
   '--verbose',
   '--include-partial-messages',
+  '--tools',
+  'Read,Glob,Grep',
+  '--strict-mcp-config',
+  '--disable-slash-commands',
+  '--settings',
+  JSON.stringify({
+    disableAllHooks: true,
+    permissions: { deny: ['Read(**/.env)', 'Read(**/.env.*)'] },
+  }),
+  '--permission-mode',
+  'dontAsk',
 ]
 
 /**
@@ -50,15 +74,19 @@ export function createClaudeTransport(options: ClaudeTransportOptions): AgentTra
       return { id: sessionOptions?.resumeSessionID ?? '' }
     },
 
-    prompt(sessionID, text, onText): Promise<AgentPromptResult> {
+    prompt(sessionID, text, onText, promptOptions): Promise<AgentPromptResult> {
       const args = [...CLAUDE_BASE_ARGS]
       if (sessionID)
         args.push('--resume', sessionID)
       if (options.model)
         args.push('--model', options.model)
-      if (options.appendSystemPrompt)
-        args.push('--append-system-prompt', options.appendSystemPrompt)
-      args.push(text)
+      // Appended, not `--system-prompt`: replacing Claude Code's own prompt would
+      // drop the working-directory and tool-use context its read tools rely on.
+      if (promptOptions?.systemPrompt)
+        args.push('--append-system-prompt', promptOptions.systemPrompt)
+      // `--` ends option parsing, so a message such as "-v" reaches Claude as
+      // the prompt instead of being read as a CLI flag.
+      args.push('--', text)
 
       return runClaudeTurn(command, args, options.directory, onText)
     },
@@ -78,7 +106,7 @@ function runClaudeTurn(
   return new Promise((resolve, reject) => {
     let child: ChildProcess
     try {
-      child = spawn(command, args, { cwd: directory, stdio: ['ignore', 'pipe', 'pipe'], env: process.env })
+      child = spawn(command, args, { cwd: directory, stdio: ['ignore', 'pipe', 'pipe'] })
     }
     catch (error) {
       reject(error)

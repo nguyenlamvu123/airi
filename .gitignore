@@ -47,6 +47,9 @@ cert*/
 # Test coverage
 coverage/
 
+# Golden-file test output, rewritten on every run and compared with tests/expect/
+apps/stage-tamagotchi/tests/actual/
+
 # Build
 out/
 bundle/
@@ -118,6 +121,8 @@ twitter-session.json
 
 # Symlinks created by nix build
 result*
+# Golden-file expectations are test data, not nix output
+!apps/stage-tamagotchi/tests/expect/**/result.json
 # Nix develop outputs
 outputs/
 

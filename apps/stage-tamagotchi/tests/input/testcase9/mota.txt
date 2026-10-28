@@ -1,0 +1,23 @@
+testcase9 — persona AIRI tới Claude qua --append-system-prompt (H5)
+====================================================================
+
+MỤC ĐÍCH
+    Chốt H5: system prompt của AIRI (card nhân vật, luật marker cảm xúc) được
+    gửi tới Claude Code ở MỖI lượt, kể cả lượt resume.
+
+ĐẦU VÀO
+    text         = "Hôm nay bạn thế nào?"
+    sessionID    = "49f03e18-..." (resume)
+    systemPrompt = 3 dòng persona, có xuống dòng và marker <|EMOTE_HAPPY|>
+    stream.ndjson = output THẬT như testcase7
+
+KỲ VỌNG
+    args.json : có "--resume" <session>, có "--append-system-prompt" <persona
+                nguyên văn, giữ xuống dòng>, kết thúc bằng "--", <text>
+    result.json : như testcase7
+
+VÌ SAO QUAN TRỌNG
+    Trước bản sửa, proxy bỏ system prompt và option appendSystemPrompt không
+    ai truyền: agent trả lời kiểu coding assistant (markdown), TTS đọc nguyên
+    văn, biểu cảm Live2D/VRM không chạy. Dùng --append-system-prompt chứ
+    không --system-prompt để giữ ngữ cảnh thư mục và tool của Claude Code.

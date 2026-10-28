@@ -1,0 +1,19 @@
+testcase4 — truy vấn tiếng Việt mà DuckDuckGo có abstract
+==========================================================
+
+MỤC ĐÍCH
+    Chốt ca hai nguồn đều có kết quả nhưng khác link: abstract tiếng Anh của
+    DuckDuckGo và bài tiếng Việt của Wikipedia cùng được giữ.
+
+ĐẦU VÀO
+    query     = "Hồ Chí Minh"
+    responses = payload THẬT 29/10/2026: DuckDuckGo có abstract (en.wikipedia.org)
+                và 21 RelatedTopics; vi.wikipedia.org có 5 bài
+
+KỲ VỌNG
+    result : 5 mục của DuckDuckGo trước (giới hạn MAX_RESULTS của duckduckgo.ts),
+             rồi 3 bài vi.wikipedia.org cho đủ trần 8
+
+VÌ SAO QUAN TRỌNG
+    Chứng minh trần 8 kết quả cắt đúng chỗ và nguồn Việt vẫn có mặt khi
+    DuckDuckGo đã trả nhiều.

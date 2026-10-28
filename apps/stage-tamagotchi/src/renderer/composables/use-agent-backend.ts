@@ -1,8 +1,12 @@
 import type { AgentBackendInfo, AgentBackendStatus } from '../../shared/eventa'
 
+import { errorMessageFrom } from '@moeru/std'
 import { useElectronEventaInvoke } from '@proj-airi/electron-vueuse'
+import { useChatOrchestratorStore } from '@proj-airi/stage-ui/stores/chat'
 import { useConsciousnessStore } from '@proj-airi/stage-ui/stores/modules/consciousness'
 import { useProvidersStore } from '@proj-airi/stage-ui/stores/providers'
+import { watch } from 'vue'
+import { toast } from 'vue-sonner'
 
 import {
   AGENT_PROXY_MODEL_ID,
@@ -26,12 +30,17 @@ function sessionKey(backendId: string): string {
 /**
  * Wires a local desktop agent backend into the shared provider system.
  *
- * On boot it reads the user's chosen backend, asks the main process to start it
- * (resuming the persisted session so the conversation continues across
+ * On boot it reads the user's chosen backend, asks the main process to start
+ * its proxy (the backend process itself launches on the first chat message,
+ * resuming the persisted session so the conversation continues across
  * launches), then points that backend's chat provider at the returned proxy
  * URL. The first time this runs it also makes the backend the active chat
  * provider so AIRI does not fall back to its own default LLM; later boots leave
  * the user's explicit provider choice untouched.
+ *
+ * The active chat provider is the source of truth for which backend runs: when
+ * it names an agent backend (picked in settings or through
+ * {@link setBackend}), that backend is the one started.
  */
 export function useAgentBackend() {
   const ensure = useElectronEventaInvoke(electronAgentBackendEnsure)
@@ -41,32 +50,49 @@ export function useAgentBackend() {
 
   const providersStore = useProvidersStore()
   const consciousnessStore = useConsciousnessStore()
+  const chatOrchestrator = useChatOrchestratorStore()
+  let unsubscribeTurnComplete: (() => void) | undefined
+  let stopProviderWatch: (() => void) | undefined
 
   function selectedBackendId(): string {
     return localStorage.getItem(BACKEND_KEY) || FALLBACK_BACKEND_ID
   }
 
+  /** Session id saved from an earlier turn, which the next start resumes. */
+  function storedSessionID(backendId: string): string | undefined {
+    return localStorage.getItem(sessionKey(backendId)) || undefined
+  }
+
   async function ensureRunning(backendId = selectedBackendId()): Promise<AgentBackendStatus> {
-    const resumeSessionID = localStorage.getItem(sessionKey(backendId)) || undefined
-    const status = await ensure({ backendId, resumeSessionID })
-    if (!status.running || !status.proxyBaseUrl) {
+    const status = await ensure({ backendId, resumeSessionID: storedSessionID(backendId) })
+    // A failed switch still reports the previous backend as running; its proxy
+    // must not be written into this backend's provider config.
+    if (!status.running || status.backendId !== backendId || !status.proxyBaseUrl || !status.proxyApiKey) {
       if (status.error)
         console.warn(`[agent] backend "${backendId}" unavailable:`, status.error)
       return status
     }
 
-    // Point the provider at the live proxy URL. Writing into the credentials map
-    // both persists the URL and marks the provider as "listed" (config differs
-    // from the static default), so it appears in the settings picker.
-    providersStore.providers[backendId] = { baseUrl: status.proxyBaseUrl }
+    // Point the provider at the live proxy URL and its per-launch token. Writing
+    // into the credentials map both persists the config and marks the provider
+    // as "listed" (config differs from the static default), so it appears in
+    // the settings picker. The stored token goes stale on the next launch and is
+    // overwritten here before any chat request uses it.
+    providersStore.providers[backendId] = { baseUrl: status.proxyBaseUrl, apiKey: status.proxyApiKey }
     providersStore.forceProviderConfigured(backendId)
 
-    // Persist the (possibly newly minted) session id so the next launch resumes
-    // the same conversation instead of starting fresh.
-    if (status.sessionID)
-      localStorage.setItem(sessionKey(backendId), status.sessionID)
-
+    persistSession(status)
     return status
+  }
+
+  // Saves the live session id so the next launch resumes the same conversation
+  // instead of starting fresh. The backend launches on the first chat request
+  // and CLI backends mint the id on their first answer, so the id usually
+  // appears only after a turn; `initialize` therefore also calls this after
+  // every completed turn.
+  function persistSession(status: AgentBackendStatus) {
+    if (status.backendId && status.sessionID)
+      localStorage.setItem(sessionKey(status.backendId), status.sessionID)
   }
 
   function applyDefaultProvider(backendId: string) {
@@ -86,26 +112,65 @@ export function useAgentBackend() {
   }
 
   async function initialize() {
-    const backendId = selectedBackendId()
-    try {
-      const status = await ensureRunning(backendId)
-      if (!status.running)
-        return
+    unsubscribeTurnComplete ??= chatOrchestrator.onChatTurnComplete(async () => {
+      try {
+        persistSession(await getStatus())
+      }
+      catch (error) {
+        console.warn('[agent] failed to persist session:', error)
+      }
+    })
 
-      applyDefaultProvider(backendId)
-      void providersStore.fetchModelsForProvider(backendId)
+    try {
+      const agentBackendIds = new Set((await list()).map(backend => backend.id))
+
+      // An agent provider picked in settings wins over the stored backend
+      // choice, so the provider in use and the backend running never disagree.
+      const activeProvider = consciousnessStore.activeProvider
+      const backendId = activeProvider && agentBackendIds.has(activeProvider) ? activeProvider : selectedBackendId()
+      const status = await ensureRunning(backendId)
+      if (status.running && status.backendId === backendId) {
+        applyDefaultProvider(backendId)
+        void providersStore.fetchModelsForProvider(backendId)
+      }
+
+      stopProviderWatch ??= watch(() => consciousnessStore.activeProvider, async (providerId) => {
+        if (!providerId || !agentBackendIds.has(providerId))
+          return
+        const current = await getStatus()
+        if (current.running && current.backendId === providerId)
+          return
+        try {
+          await setBackend(providerId)
+        }
+        catch (error) {
+          toast.error(errorMessageFrom(error) ?? `Failed to start agent backend "${providerId}"`)
+        }
+      })
     }
     catch (error) {
       console.warn('[agent] failed to initialize backend:', error)
     }
   }
 
-  /** Persists a new backend choice and starts it, replacing the active one. */
+  /**
+   * Switches to another agent backend and makes it the chat provider.
+   *
+   * The main process runs one backend at a time, so a successful switch stops
+   * the previous one; the chat provider has to follow or every message would
+   * go to a stopped proxy. On failure nothing changes: the previous backend
+   * keeps running and stays selected, and the error is thrown for the caller
+   * to show.
+   */
   async function setBackend(backendId: string): Promise<AgentBackendStatus> {
-    localStorage.setItem(BACKEND_KEY, backendId)
     const status = await ensureRunning(backendId)
-    if (status.running)
-      void providersStore.fetchModelsForProvider(backendId)
+    if (!status.running || status.backendId !== backendId)
+      throw new Error(status.error ?? `Agent backend "${backendId}" did not start`)
+
+    localStorage.setItem(BACKEND_KEY, backendId)
+    consciousnessStore.activeProvider = backendId
+    consciousnessStore.activeModel = AGENT_PROXY_MODEL_ID
+    void providersStore.fetchModelsForProvider(backendId)
     return status
   }
 
@@ -114,6 +179,10 @@ export function useAgentBackend() {
   }
 
   async function dispose() {
+    unsubscribeTurnComplete?.()
+    unsubscribeTurnComplete = undefined
+    stopProviderWatch?.()
+    stopProviderWatch = undefined
     try {
       await stop()
     }
@@ -122,5 +191,5 @@ export function useAgentBackend() {
     }
   }
 
-  return { ensureRunning, getStatus, getBackends, setBackend, initialize, dispose }
+  return { ensureRunning, getStatus, getBackends, selectedBackendId, storedSessionID, setBackend, initialize, dispose }
 }

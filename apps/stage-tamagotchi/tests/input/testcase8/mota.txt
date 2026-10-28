@@ -1,0 +1,21 @@
+testcase8 — lượt có thinking và tool use, prompt bắt đầu bằng "-"
+=================================================================
+
+MỤC ĐÍCH
+    Chốt hai thứ trên một lượt thật dài: (1) thinking_delta, input_json_delta
+    và tool_result không lọt vào text; (2) prompt bắt đầu bằng "-" đi sau "--".
+
+ĐẦU VÀO
+    text          = "-x Do these three steps ..." (đúng prompt đã chạy thật)
+    stream.ndjson = output THẬT 29/10/2026 với bộ cờ chỉ-đọc (--tools
+                    Read,Glob,Grep, --permission-mode dontAsk, ...): đọc
+                    notes.txt được, đọc .env bị từ chối, không có Bash
+
+KỲ VỌNG
+    result.json : streamed = text = câu trả lời cuối của model
+    args.json   : "...", "--", "-x Do these three steps ..."
+
+VÌ SAO QUAN TRỌNG
+    H4: trước bản sửa, "-v" làm claude in số phiên bản rồi exit 0 (AIRI nhận
+    câu rỗng). Lượt có tool use còn là chỗ dòng "assistant" xuất hiện nhiều
+    lần, nên đây là ca dễ lộ lỗi lặp text nhất.

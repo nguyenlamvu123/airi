@@ -1,0 +1,144 @@
+[
+  {
+    "url": "https://api.duckduckgo.com/?q=th%E1%BB%9Di+ti%E1%BA%BFt+h%C3%A0+n%E1%BB%99i&format=json&no_html=1&skip_disambig=1&t=airi",
+    "status": 200,
+    "body": {
+      "Abstract": "",
+      "AbstractSource": "",
+      "AbstractText": "",
+      "AbstractURL": "",
+      "Answer": "",
+      "AnswerType": "",
+      "Definition": "",
+      "DefinitionSource": "",
+      "DefinitionURL": "",
+      "Entity": "",
+      "Heading": "",
+      "Image": "",
+      "ImageHeight": "",
+      "ImageIsLogo": "",
+      "ImageWidth": "",
+      "Infobox": "",
+      "Redirect": "",
+      "RelatedTopics": [],
+      "Results": [],
+      "Type": "",
+      "meta": {
+        "attribution": null,
+        "blockgroup": null,
+        "created_date": "2021-03-24",
+        "description": "testing",
+        "designer": null,
+        "dev_date": "2021-03-24",
+        "dev_milestone": "development",
+        "developer": [
+          {
+            "name": "zt",
+            "type": "duck.co",
+            "url": "https://duck.co/user/zt"
+          }
+        ],
+        "example_query": "",
+        "id": "just_another_test",
+        "is_stackexchange": 0,
+        "js_callback_name": "another_test",
+        "live_date": null,
+        "maintainer": {
+          "github": ""
+        },
+        "name": "Just Another Test",
+        "perl_module": "DDG::Lontail::AnotherTest",
+        "producer": null,
+        "production_state": "offline",
+        "repo": "fathead",
+        "signal_from": "just_another_test",
+        "src_domain": "how about there",
+        "src_id": null,
+        "src_name": "hi there",
+        "src_options": {
+          "directory": "",
+          "is_fanon": 0,
+          "is_mediawiki": 0,
+          "is_wikipedia": 0,
+          "language": "",
+          "min_abstract_length": null,
+          "skip_abstract": 0,
+          "skip_abstract_paren": 0,
+          "skip_icon": 0,
+          "skip_image_name": 0,
+          "skip_qr": "",
+          "src_info": "",
+          "src_skip": ""
+        },
+        "src_url": "Hello there",
+        "status": null,
+        "tab": "is this source",
+        "topic": [],
+        "unsafe": null
+      }
+    }
+  },
+  {
+    "url": "https://vi.wikipedia.org/w/api.php?action=query&list=search&srsearch=th%E1%BB%9Di+ti%E1%BA%BFt+h%C3%A0+n%E1%BB%99i&srlimit=5&format=json&formatversion=2&utf8=1",
+    "status": 200,
+    "body": {
+      "batchcomplete": true,
+      "continue": {
+        "sroffset": 5,
+        "continue": "-||"
+      },
+      "query": {
+        "searchinfo": {
+          "totalhits": 11846
+        },
+        "search": [
+          {
+            "ns": 0,
+            "title": "Hà Nội",
+            "pageid": 80,
+            "size": 297904,
+            "wordcount": 30696,
+            "snippet": "dân số xấp xỉ 8,8 triệu người, <span class=\"searchmatch\">Hà</span> <span class=\"searchmatch\">Nội</span> là thành phố trực thuộc trung ương có diện tích lớn thứ sáu tại Việt Nam, đồng <span class=\"searchmatch\">thời</span> cũng là thành phố đông dân thứ",
+            "timestamp": "2026-10-27T03:38:08Z"
+          },
+          {
+            "ns": 0,
+            "title": "Tên gọi của Hà Nội",
+            "pageid": 2169568,
+            "size": 11133,
+            "wordcount": 805,
+            "snippet": "Long – <span class=\"searchmatch\">Hà</span> <span class=\"searchmatch\">Nội</span> có nhiều tên gọi. Ở đây chia các tên gọi thành hai loại: Chính quy và không chính quy, theo thứ tự <span class=\"searchmatch\">thời</span> gian như sau (mời xem chi <span class=\"searchmatch\">tiết</span> tại",
+            "timestamp": "2026-09-22T14:05:40Z"
+          },
+          {
+            "ns": 0,
+            "title": "Câu lạc bộ bóng đá Công an Hà Nội",
+            "pageid": 37020,
+            "size": 68829,
+            "wordcount": 4961,
+            "snippet": "Câu lạc bộ bóng đá Công an <span class=\"searchmatch\">Hà</span> <span class=\"searchmatch\">Nội</span> (tên ngắn gọn là CA <span class=\"searchmatch\">Hà</span> <span class=\"searchmatch\">Nội</span> hoặc CAHN) là một câu lạc bộ bóng đá chuyên nghiệp tại Việt Nam, thành lập từ năm 1956 đến",
+            "timestamp": "2026-10-27T13:48:23Z"
+          },
+          {
+            "ns": 0,
+            "title": "Đại học Bách khoa Hà Nội",
+            "pageid": 39203,
+            "size": 86434,
+            "wordcount": 10204,
+            "snippet": "Bách khoa <span class=\"searchmatch\">Hà</span> <span class=\"searchmatch\">Nội</span> (tiếng Anh: Hanoi University of Science and Technology, HUST) là đại học theo lĩnh vực kỹ thuật và công nghệ có trụ sở tại <span class=\"searchmatch\">Hà</span> <span class=\"searchmatch\">Nội</span>, Việt Nam",
+            "timestamp": "2026-10-14T16:44:19Z"
+          },
+          {
+            "ns": 0,
+            "title": "Câu lạc bộ bóng đá Hà Nội (2006)",
+            "pageid": 19861652,
+            "size": 150743,
+            "wordcount": 15555,
+            "snippet": "Câu lạc bộ bóng đá <span class=\"searchmatch\">Hà</span> <span class=\"searchmatch\">Nội</span> (tiếng Anh: Hanoi Football Club) là một câu lạc bộ bóng đá chuyên nghiệp có trụ sở tại <span class=\"searchmatch\">Hà</span> <span class=\"searchmatch\">Nội</span>, Việt Nam. Thuộc sở hữu của Tập",
+            "timestamp": "2026-10-25T15:31:41Z"
+          }
+        ]
+      }
+    }
+  }
+]

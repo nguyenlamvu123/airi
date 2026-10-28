@@ -1,0 +1,19 @@
+testcase2 — truy vấn kỹ thuật tiếng Anh: chọn Wikipedia tiếng Anh
+=================================================================
+
+MỤC ĐÍCH
+    Chốt nhánh chọn ngôn ngữ: không có chữ cái riêng của tiếng Việt thì dùng
+    en.wikipedia.org.
+
+ĐẦU VÀO
+    query     = "vue 3 composition api"
+    responses = payload THẬT 29/10/2026: DuckDuckGo 200 rỗng, en.wikipedia.org 200
+                với 5 bài (Vue.js, Nuxt, Vuex, ...)
+
+KỲ VỌNG
+    urls   : DuckDuckGo và en.wikipedia.org
+    result : 5 kết quả en.wikipedia.org, bài "Vue.js" đứng đầu
+
+VÌ SAO QUAN TRỌNG
+    Câu hỏi kỹ thuật là loại thứ hai ra rỗng trong báo cáo. Gửi nhầm sang
+    vi.wikipedia.org thì gần như không có bài nào.

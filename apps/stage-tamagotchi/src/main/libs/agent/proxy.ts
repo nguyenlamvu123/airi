@@ -3,6 +3,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { AgentTransport } from './types'
 
 import { Buffer } from 'node:buffer'
+import { randomBytes, timingSafeEqual } from 'node:crypto'
 import { createServer } from 'node:http'
 
 import { errorMessageFrom } from '@moeru/std'
@@ -35,17 +36,38 @@ export interface AgentProxyOptions {
 export interface AgentProxy {
   /** OpenAI-compatible base URL including the `/v1` suffix. */
   baseUrl: string
+  /**
+   * Bearer token every `/v1/*` request must carry. Minted per proxy start, so
+   * it rotates on every launch and never needs to be stored.
+   */
+  apiKey: string
   /** Latest session id, which may differ from the initial one after a turn. */
   getSessionID: () => string | undefined
   close: () => Promise<void>
 }
 
+// The bearer token, not the origin, is what gates the agent: the renderer's
+// origin is `file://` in packaged builds and the Vite dev URL in development,
+// and a CORS allow-list would not stop a hostile page anyway, because a
+// `text/plain` POST is a "simple request" that reaches the server unchecked.
+// Such a page cannot attach `Authorization` without a preflight and without
+// knowing the token, so `*` is safe here.
+//
+// `authorization` must be listed explicitly: per the Fetch spec, a `*`
+// wildcard in `access-control-allow-headers` does not cover it.
 function corsHeaders(): Record<string, string> {
   return {
-    'access-control-allow-origin': 'http://localhost:5273',
+    'access-control-allow-origin': '*',
     'access-control-allow-methods': 'GET, POST, OPTIONS',
-    'access-control-allow-headers': '*',
+    'access-control-allow-headers': 'authorization, content-type',
   }
+}
+
+function isAuthorized(request: IncomingMessage, token: string): boolean {
+  const actual = Buffer.from(request.headers.authorization ?? '')
+  const expected = Buffer.from(`Bearer ${token}`)
+  // timingSafeEqual throws on length mismatch, so compare lengths first.
+  return actual.length === expected.length && timingSafeEqual(actual, expected)
 }
 
 /**
@@ -65,6 +87,18 @@ export function openAIContentToText(content: unknown): string {
       .join('')
   }
   return ''
+}
+
+/**
+ * Joins every `system` message of the request into one prompt. AIRI puts the
+ * character card and marker rules there; the agent receives them per turn.
+ */
+export function extractSystemPrompt(messages: OpenAIChatMessage[] | undefined): string {
+  return (messages ?? [])
+    .filter(message => message.role === 'system')
+    .map(message => openAIContentToText(message.content).trim())
+    .filter(Boolean)
+    .join('\n\n')
 }
 
 /** Returns the text of the last user message, which is what the agent should answer. */
@@ -106,10 +140,17 @@ function writeSseChunk(response: ServerResponse, payload: unknown): void {
  *
  * Exposes only what xsAI's OpenAI provider needs: `GET /v1/models` and
  * `POST /v1/chat/completions` (streaming and non-streaming). The transport owns
- * the conversation, so only the latest user message is forwarded.
+ * the conversation history, so only the latest user message is forwarded as the
+ * turn, together with the request's system messages (AIRI's persona). Tools and
+ * image parts are dropped: the agent runs its own read-only tools instead.
+ *
+ * Every `/v1/*` route requires `Authorization: Bearer <apiKey>`. The agent
+ * behind the proxy can read files and run tools, so any local process or web
+ * page that finds the port must not be able to drive it.
  */
 export async function startAgentProxy(options: AgentProxyOptions): Promise<AgentProxy> {
   const host = options.host ?? '127.0.0.1'
+  const token = randomBytes(32).toString('base64url')
   let sessionID = options.sessionID
 
   function json(response: ServerResponse, status: number, body: unknown): void {
@@ -171,12 +212,13 @@ export async function startAgentProxy(options: AgentProxyOptions): Promise<Agent
       }
     }
 
-    if (!sessionID)
-      sessionID = (await options.transport.createSession({ title: 'AIRI' })).id
-
     let result
     try {
-      result = await options.transport.prompt(sessionID, promptText, onText)
+      // Opening the session can launch the backend process, so its failure must
+      // reach the client as an error instead of leaving the response open.
+      if (!sessionID)
+        sessionID = (await options.transport.createSession({ title: 'AIRI' })).id
+      result = await options.transport.prompt(sessionID, promptText, onText, { systemPrompt: extractSystemPrompt(body.messages) })
     }
     catch (error) {
       const message = `agent prompt failed: ${errorMessageFrom(error) ?? 'Unknown error'}`
@@ -226,6 +268,11 @@ export async function startAgentProxy(options: AgentProxyOptions): Promise<Agent
       return
     }
 
+    if (url.pathname.startsWith('/v1/') && !isAuthorized(request, token)) {
+      json(response, 401, { error: { message: 'Missing or invalid bearer token', type: 'invalid_request_error' } })
+      return
+    }
+
     if (request.method === 'GET' && url.pathname === '/v1/models') {
       json(response, 200, {
         object: 'list',
@@ -260,6 +307,7 @@ export async function startAgentProxy(options: AgentProxyOptions): Promise<Agent
 
   return {
     baseUrl: `http://${host}:${port}/v1`,
+    apiKey: token,
     getSessionID: () => sessionID,
     async close() {
       await new Promise<void>(resolve => server.close(() => resolve()))

@@ -1,0 +1,4 @@
+{
+  "status": 401,
+  "error": "Missing or invalid bearer token"
+}

@@ -47,6 +47,7 @@ docs:
   'close': Đóng
   'loading': Đang tìm kiếm…
   'empty': Không tìm thấy kết quả.
+  'open-full': Mở kết quả đầy đủ trên DuckDuckGo
 
 widgets:
   close: Đóng tiện ích

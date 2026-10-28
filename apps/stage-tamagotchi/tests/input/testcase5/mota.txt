@@ -1,0 +1,18 @@
+testcase5 — DuckDuckGo lỗi 500, Wikipedia vẫn trả kết quả
+=========================================================
+
+MỤC ĐÍCH
+    Chốt việc một nguồn hỏng không làm hỏng cả lượt tìm.
+
+ĐẦU VÀO
+    query     = "thời tiết hà nội"
+    responses = api.duckduckgo.com: HTTP 500 (giả lập)
+                vi.wikipedia.org: payload THẬT như testcase1
+
+KỲ VỌNG
+    urls   : vẫn đủ 2 URL
+    result : y hệt testcase1, không có error.json
+
+VÌ SAO QUAN TRỌNG
+    Hai nguồn chạy song song bằng Promise.allSettled. Nếu ai đổi sang
+    Promise.all thì một nguồn chết là panel báo lỗi dù nguồn kia có kết quả.

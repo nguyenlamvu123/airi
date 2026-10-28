@@ -1,0 +1,24 @@
+testcase7 — lượt Claude Code đơn giản: text stream ra đúng một lần
+==================================================================
+
+MỤC ĐÍCH
+    Chốt hồi quy của commit fa06bf0f2: parser không được phát lại toàn văn
+    câu trả lời từ dòng "assistant".
+
+ĐẦU VÀO
+    text        = "xin chào", không session, không system prompt
+    stream.ndjson = output THẬT của `claude -p --output-format stream-json
+                  --verbose --include-partial-messages` (Claude Code 2.1.312,
+                  chụp 28/10/2026). Đã bỏ dòng hook và dòng rate limit, rút gọn
+                  dòng init. Gồm 1 text_delta "xin chào", rồi dòng "assistant"
+                  chứa lại "xin chào", rồi dòng "result".
+
+KỲ VỌNG
+    result.json : streamed = text = "xin chào", sessionID và modelID lấy từ stream
+    args.json   : cờ chỉ-đọc cố định, rồi "--", rồi "xin chào"; không có
+                  --resume, không có --append-system-prompt
+
+VÌ SAO QUAN TRỌNG
+    fa06bf0f2 thêm nhánh "assistant" phát toàn văn làm delta. Vì Claude Code
+    LUÔN in dòng "assistant" sau các text_delta khi bật partial messages, chat
+    và TTS sẽ nhận "xin chàoxin chào".

@@ -1,0 +1,490 @@
+[
+  {
+    "url": "https://api.duckduckgo.com/?q=H%E1%BB%93+Ch%C3%AD+Minh&format=json&no_html=1&skip_disambig=1&t=airi",
+    "status": 200,
+    "body": {
+      "Abstract": "Hồ Chí Minh, colloquially known as Uncle Ho among other aliases and sobriquets, was a Vietnamese revolutionary and politician who served as the founder and first president of the Democratic Republic of Vietnam from 1945 until his death in 1969, and as its first prime minister from 1945 to 1955. Ideologically a Marxist–Leninist, he founded the Indochinese Communist Party in 1930 and its successor Workers' Party of Vietnam in 1951, serving as the party's chairman until his death. Hồ was born in Nghệ An province in French Indochina, and received a French education. Starting in 1911, he worked in various countries overseas, and in 1920 was a founding member of the French Communist Party in Paris. After studying in Moscow, Hồ founded the Vietnamese Revolutionary Youth League in 1925, which he transformed into the Indochinese Communist Party in 1930.",
+      "AbstractSource": "Wikipedia",
+      "AbstractText": "Hồ Chí Minh, colloquially known as Uncle Ho among other aliases and sobriquets, was a Vietnamese revolutionary and politician who served as the founder and first president of the Democratic Republic of Vietnam from 1945 until his death in 1969, and as its first prime minister from 1945 to 1955. Ideologically a Marxist–Leninist, he founded the Indochinese Communist Party in 1930 and its successor Workers' Party of Vietnam in 1951, serving as the party's chairman until his death. Hồ was born in Nghệ An province in French Indochina, and received a French education. Starting in 1911, he worked in various countries overseas, and in 1920 was a founding member of the French Communist Party in Paris. After studying in Moscow, Hồ founded the Vietnamese Revolutionary Youth League in 1925, which he transformed into the Indochinese Communist Party in 1930.",
+      "AbstractURL": "https://en.wikipedia.org/wiki/Ho_Chi_Minh",
+      "Answer": "",
+      "AnswerType": "",
+      "Definition": "",
+      "DefinitionSource": "",
+      "DefinitionURL": "",
+      "Entity": "{{infobox",
+      "Heading": "Ho Chi Minh",
+      "Image": "",
+      "ImageHeight": 0,
+      "ImageIsLogo": 0,
+      "ImageWidth": 0,
+      "Infobox": {
+        "content": [
+          {
+            "data_type": "imdb_id",
+            "label": "IMDb ID",
+            "value": "nm0387282",
+            "wiki_order": "106"
+          },
+          {
+            "data_type": "spotify_artist_id",
+            "label": "Spotify Artist ID",
+            "value": "0zymRZZWChvPvJPcbIiFEd",
+            "wiki_order": "108"
+          },
+          {
+            "data_type": "itunes_artist_id",
+            "label": "iTunes artist ID",
+            "value": "150390770",
+            "wiki_order": "115"
+          },
+          {
+            "data_type": "instance",
+            "label": "Instance of",
+            "value": {
+              "entity-type": "item",
+              "id": "Q5",
+              "numeric-id": 5
+            },
+            "wiki_order": "207"
+          },
+          {
+            "data_type": "date_of_birth",
+            "label": "Born",
+            "value": {
+              "after": 0,
+              "before": 0,
+              "calendarmodel": "http://www.wikidata.org/entity/Q1985727",
+              "precision": 11,
+              "time": "+1890-05-19T00:00:00Z",
+              "timezone": 0
+            },
+            "wiki_order": "209"
+          },
+          {
+            "data_type": "string",
+            "label": "Age at death",
+            "value": "79 years",
+            "wiki_order": 0
+          },
+          {
+            "data_type": "date_of_death",
+            "label": "Died",
+            "value": {
+              "after": 0,
+              "before": 0,
+              "calendarmodel": "http://www.wikidata.org/entity/Q1985727",
+              "precision": 11,
+              "time": "+1969-09-02T00:00:00Z",
+              "timezone": 0
+            },
+            "wiki_order": "210"
+          },
+          {
+            "data_type": "wd_description",
+            "label": "Wikidata description",
+            "value": "Vietnamese communist leader, founder of North Vietnam (1890–1969)",
+            "wiki_order": "210"
+          },
+          {
+            "data_type": "wikidata_id",
+            "label": "Wikidata id",
+            "value": "Q36014",
+            "wiki_order": "211"
+          },
+          {
+            "data_type": "wikidata_label",
+            "label": "Wikidata label",
+            "value": "Ho Chi Minh",
+            "wiki_order": "212"
+          },
+          {
+            "data_type": "wikidata_aliases",
+            "label": "Wikidata aliases",
+            "value": [
+              "Ho Chi Minh",
+              "La Lập",
+              "Tất Thành",
+              "Uncle Hồ",
+              "Trần Thắng Lợi",
+              "Chiến Thắng",
+              "Thu Giang",
+              "Tân Trào",
+              "Nguyễn Tất Thành",
+              "Văn Ba",
+              "Chairman Ho Chi Minh",
+              "Lê Ba",
+              "Hồ Quang",
+              "Hồ",
+              "Nilốxki",
+              "Lý Mỗ",
+              "Chiến Sĩ",
+              "Ông Lu",
+              "Cuồng Điệt Tất Thành",
+              "Thầu Chín",
+              "Henri Tren",
+              "Vương",
+              "Nguyễn Sinh Công",
+              "Mai Hữu Phúc",
+              "Tân Sinh",
+              "Sung Man Cho",
+              "Chen Vang",
+              "Nguyễn Du Kích",
+              "Lý An Nam",
+              "Nguyễn Văn Ba",
+              "Uncle Ho",
+              "Bình Sơn",
+              "Trần Lực",
+              "Pôn",
+              "Albert de Pouvourville",
+              "Lê Nhân",
+              "Thanh Lan",
+              "Tống Văn Sơ",
+              "Lin",
+              "Nói Thật",
+              "Nguyễn Ái Dân",
+              "Lý Thụy",
+              "Paul Tất Thành",
+              "Bác Hồ"
+            ],
+            "wiki_order": "213"
+          }
+        ]
+      },
+      "Redirect": "",
+      "RelatedTopics": [
+        {
+          "FirstURL": "https://duckduckgo.com/c/Ho_Chi_Minh",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Ho_Chi_Minh\">Ho Chi Minh Category</a>",
+          "Text": "Ho Chi Minh Category"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/Communism_in_Vietnam",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/Communism_in_Vietnam\">Communism in Vietnam</a> - Communism in Vietnam is closely associated with the country's modern history and politics. Marxism–Leninism was first introduced into Vietnam in the 1920s.",
+          "Text": "Communism in Vietnam - Communism in Vietnam is closely associated with the country's modern history and politics. Marxism–Leninism was first introduced into Vietnam in the 1920s."
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/First_Indochina_War",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/First_Indochina_War\">First Indochina War</a> - The First Indochina War, known alternatively as the French Indochina War, was fought in French Indochina between the French Union and the Viet Minh and their respective allies, from 19 December 1946 until 11 August 1954. Most of the engagements of this conflict occurred in Vietnam.",
+          "Text": "First Indochina War - The First Indochina War, known alternatively as the French Indochina War, was fought in French Indochina between the French Union and the Viet Minh and their respective allies, from 19 December 1946 until 11 August 1954. Most of the engagements of this conflict occurred in Vietnam."
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/Vietnam_War",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/Vietnam_War\">Vietnam War</a> - The Vietnam War was an armed conflict in Vietnam, Laos, and Cambodia fought between North Vietnam and South Vietnam and their allies. North Vietnam was supported by the Soviet Union and China, while South Vietnam was supported by the United States and other anti-communist nations.",
+          "Text": "Vietnam War - The Vietnam War was an armed conflict in Vietnam, Laos, and Cambodia fought between North Vietnam and South Vietnam and their allies. North Vietnam was supported by the Soviet Union and China, while South Vietnam was supported by the United States and other anti-communist nations."
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Presidents_of_Vietnam",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Presidents_of_Vietnam\">Presidents of Vietnam</a>",
+          "Text": "Presidents of Vietnam"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/North_Vietnam",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/North_Vietnam\">North Vietnam</a>",
+          "Text": "North Vietnam"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Vietnamese_expatriates_in_China",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Vietnamese_expatriates_in_China\">Vietnamese expatriates in China</a>",
+          "Text": "Vietnamese expatriates in China"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Vietnamese_expatriates_in_France",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Vietnamese_expatriates_in_France\">Vietnamese expatriates in France</a>",
+          "Text": "Vietnamese expatriates in France"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Vietnamese_communists",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Vietnamese_communists\">Vietnamese communists</a>",
+          "Text": "Vietnamese communists"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/20th-century_Vietnamese_poets",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/20th-century_Vietnamese_poets\">20th-century Vietnamese poets</a>",
+          "Text": "20th-century Vietnamese poets"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Communist_University_of_the_Toilers_of_the_East_alumni",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Communist_University_of_the_Toilers_of_the_East_alumni\">Communist University of the Toilers of the East alumni</a>",
+          "Text": "Communist University of the Toilers of the East alumni"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Government_ministers_of_Vietnam",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Government_ministers_of_Vietnam\">Government ministers of Vietnam</a>",
+          "Text": "Government ministers of Vietnam"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Vietnamese_male_poets",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Vietnamese_male_poets\">Vietnamese male poets</a>",
+          "Text": "Vietnamese male poets"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Vietnamese_revolutionaries",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Vietnamese_revolutionaries\">Vietnamese revolutionaries</a>",
+          "Text": "Vietnamese revolutionaries"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Vietnamese_nationalists",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Vietnamese_nationalists\">Vietnamese nationalists</a>",
+          "Text": "Vietnamese nationalists"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/People_of_the_First_Indochina_War",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/People_of_the_First_Indochina_War\">People of the First Indochina War</a>",
+          "Text": "People of the First Indochina War"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Left-wing_nationalism",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Left-wing_nationalism\">Left-wing nationalism</a>",
+          "Text": "Left-wing nationalism"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Vietnamese_people_of_the_Vietnam_War",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Vietnamese_people_of_the_Vietnam_War\">Vietnamese people of the Vietnam War</a>",
+          "Text": "Vietnamese people of the Vietnam War"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Pastry_chefs",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Pastry_chefs\">Pastry chefs</a>",
+          "Text": "Pastry chefs"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/People_of_the_Cold_War",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/People_of_the_Cold_War\">People of the Cold War</a>",
+          "Text": "People of the Cold War"
+        },
+        {
+          "FirstURL": "https://duckduckgo.com/c/Political_party_founders",
+          "Icon": {
+            "Height": "",
+            "URL": "",
+            "Width": ""
+          },
+          "Result": "<a href=\"https://duckduckgo.com/c/Political_party_founders\">Political party founders</a>",
+          "Text": "Political party founders"
+        }
+      ],
+      "Results": [],
+      "Type": "A",
+      "meta": {
+        "attribution": null,
+        "blockgroup": null,
+        "created_date": null,
+        "description": "Wikipedia",
+        "designer": null,
+        "dev_date": null,
+        "dev_milestone": "live",
+        "developer": [
+          {
+            "name": "DDG Team",
+            "type": "ddg",
+            "url": "http://www.duckduckhack.com"
+          }
+        ],
+        "example_query": "nikola tesla",
+        "id": "wikipedia_fathead",
+        "is_stackexchange": null,
+        "js_callback_name": "wikipedia",
+        "live_date": null,
+        "maintainer": {
+          "github": "duckduckgo"
+        },
+        "name": "Wikipedia",
+        "perl_module": "DDG::Fathead::Wikipedia",
+        "producer": null,
+        "production_state": "online",
+        "repo": "fathead",
+        "signal_from": "wikipedia_fathead",
+        "src_domain": "en.wikipedia.org",
+        "src_id": 1,
+        "src_name": "Wikipedia",
+        "src_options": {
+          "directory": "",
+          "is_fanon": 0,
+          "is_mediawiki": 1,
+          "is_wikipedia": 1,
+          "language": "en",
+          "min_abstract_length": "20",
+          "skip_abstract": 0,
+          "skip_abstract_paren": 0,
+          "skip_end": "0",
+          "skip_icon": 0,
+          "skip_image_name": 0,
+          "skip_qr": "",
+          "source_skip": "",
+          "src_info": ""
+        },
+        "src_url": null,
+        "status": "live",
+        "tab": "About",
+        "topic": [
+          "productivity"
+        ],
+        "unsafe": 0
+      }
+    }
+  },
+  {
+    "url": "https://vi.wikipedia.org/w/api.php?action=query&list=search&srsearch=H%E1%BB%93+Ch%C3%AD+Minh&srlimit=5&format=json&formatversion=2&utf8=1",
+    "status": 200,
+    "body": {
+      "batchcomplete": true,
+      "continue": {
+        "sroffset": 5,
+        "continue": "-||"
+      },
+      "query": {
+        "searchinfo": {
+          "totalhits": 25711
+        },
+        "search": [
+          {
+            "ns": 0,
+            "title": "Hồ Chí Minh",
+            "pageid": 375318,
+            "size": 290325,
+            "wordcount": 34172,
+            "snippet": "<span class=\"searchmatch\">Hồ</span> <span class=\"searchmatch\">Chí</span> <span class=\"searchmatch\">Minh</span> (chữ Nho: 胡志明; 19 tháng 5 năm 1890 – 2 tháng 9 năm 1969), tên khai sinh là Nguyễn Sinh Cung, tên khi đi học là Nguyễn Tất Thành (chữ Nho:",
+            "timestamp": "2026-10-07T08:01:47Z"
+          },
+          {
+            "ns": 0,
+            "title": "Thành phố Hồ Chí Minh",
+            "pageid": 39,
+            "size": 255580,
+            "wordcount": 25693,
+            "snippet": "Thành phố <span class=\"searchmatch\">Hồ</span> <span class=\"searchmatch\">Chí</span> <span class=\"searchmatch\">Minh</span> (viết tắt TP. HCM), còn được gọi thông tục là Sài Gòn; là thành phố lớn nhất Việt Nam về quy mô dân số và là trung tâm kinh tế,",
+            "timestamp": "2026-10-22T02:54:01Z"
+          },
+          {
+            "ns": 0,
+            "title": "Lăng Chủ tịch Hồ Chí Minh",
+            "pageid": 359401,
+            "size": 25702,
+            "wordcount": 3224,
+            "snippet": "Lăng Chủ tịch <span class=\"searchmatch\">Hồ</span> <span class=\"searchmatch\">Chí</span> <span class=\"searchmatch\">Minh</span>, còn gọi là Lăng <span class=\"searchmatch\">Hồ</span> Chủ tịch, Lăng Bác, là nơi gìn giữ thi hài Chủ tịch <span class=\"searchmatch\">Hồ</span> <span class=\"searchmatch\">Chí</span> <span class=\"searchmatch\">Minh</span>. Lăng được chính thức khởi công ngày 2 tháng",
+            "timestamp": "2026-08-01T21:52:05Z"
+          },
+          {
+            "ns": 0,
+            "title": "Gia đình Hồ Chí Minh",
+            "pageid": 238044,
+            "size": 33860,
+            "wordcount": 4559,
+            "snippet": "<span class=\"searchmatch\">Hồ</span> <span class=\"searchmatch\">Chí</span> <span class=\"searchmatch\">Minh</span>, tên thật là Nguyễn Sinh Cung, vị chủ tịch đầu tiên của nước Việt Nam Dân chủ Cộng hòa (nay là Cộng hòa xã hội chủ nghĩa Việt Nam), sinh ra",
+            "timestamp": "2026-06-22T15:31:49Z"
+          },
+          {
+            "ns": 0,
+            "title": "Tư tưởng Hồ Chí Minh",
+            "pageid": 183196,
+            "size": 143394,
+            "wordcount": 20178,
+            "snippet": "Tư tưởng <span class=\"searchmatch\">Hồ</span> <span class=\"searchmatch\">Chí</span> <span class=\"searchmatch\">Minh</span> là một hệ thống quan điểm và tư tưởng của <span class=\"searchmatch\">Hồ</span> <span class=\"searchmatch\">Chí</span> <span class=\"searchmatch\">Minh</span> trong sự nghiệp cách mạng của ông được Đảng Cộng sản Việt Nam tổng kết, hệ",
+            "timestamp": "2026-08-27T17:13:01Z"
+          }
+        ]
+      }
+    }
+  }
+]
