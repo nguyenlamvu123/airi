@@ -31,7 +31,6 @@ const CLAUDE_BASE_ARGS = [
   'stream-json',
   '--verbose',
   '--include-partial-messages',
-  '--dangerously-skip-permissions',
 ]
 
 /**
@@ -79,7 +78,7 @@ function runClaudeTurn(
   return new Promise((resolve, reject) => {
     let child: ChildProcess
     try {
-      child = spawn(command, args, { cwd: directory, stdio: ['ignore', 'pipe', 'pipe'] })
+      child = spawn(command, args, { cwd: directory, stdio: ['ignore', 'pipe', 'pipe'], env: process.env })
     }
     catch (error) {
       reject(error)

@@ -23,14 +23,22 @@ interface ClaudeRawLine {
   type?: string
   subtype?: string
   session_id?: string
+  sessionId?: string
   model?: string
   is_error?: boolean
+  error?: boolean
   result?: string
+  text?: string
+  message?: {
+    model?: string
+    content?: Array<{ type?: string, text?: string, thinking?: string }> | string
+  }
   event?: {
     type?: string
-    delta?: { type?: string, text?: string }
+    delta?: { type?: string, text?: string, thinking?: string }
     message?: { model?: string }
   }
+  content?: Array<{ type?: string, text?: string }> | string
 }
 
 /**
@@ -56,30 +64,61 @@ export function parseClaudeStreamLine(line: string): ClaudeStreamUpdate | undefi
   const update: ClaudeStreamUpdate = {}
   if (raw.session_id)
     update.sessionID = raw.session_id
+  if (raw.sessionId)
+    update.sessionID = raw.sessionId
 
   switch (raw.type) {
     case 'system':
       // The init line carries the session id (already captured) and model.
       if (raw.model)
         update.modelID = raw.model
+      if (raw.message?.model)
+        update.modelID = raw.message.model
       break
+
+    case 'assistant': {
+      // Some Claude Code CLI builds emit an `assistant` line with full message.
+      if (raw.message?.model)
+        update.modelID = raw.message.model
+      const content = raw.message?.content ?? raw.content
+      if (typeof content === 'string' && content)
+        update.delta = content
+      else if (Array.isArray(content)) {
+        for (const part of content) {
+          if (part?.type === 'thought')
+            continue
+          if (part?.type === 'text' && part.text)
+            update.delta = part.text
+        }
+      }
+      break
+    }
 
     case 'stream_event': {
       const event = raw.event
       if (event?.message?.model)
         update.modelID = event.message.model
-      if (event?.type === 'content_block_delta' && event.delta?.type === 'text_delta' && event.delta.text)
-        update.delta = event.delta.text
+      if (event?.type === 'content_block_delta') {
+        const delta = event.delta
+        if (delta?.type === 'thought_delta')
+          break
+        if ((delta?.type === 'text_delta' || delta?.type === 'thought') && delta.text)
+          update.delta = delta.text
+      }
       break
     }
 
     case 'result':
-      if (raw.is_error) {
+      if (raw.is_error || raw.error || raw.subtype === 'error') {
         update.isError = true
-        update.errorText = raw.result || raw.subtype || 'Claude Code reported an error'
+        const errorObj = typeof raw.error === 'object' && raw.error ? (raw.error as { message?: string }) : undefined
+        update.errorText = raw.result || errorObj?.message || raw.subtype || 'Claude Code reported an error'
       }
       else if (typeof raw.result === 'string') {
         update.resultText = raw.result
+      }
+      else if (typeof raw.text === 'string') {
+        update.resultText = raw.text
       }
       break
 

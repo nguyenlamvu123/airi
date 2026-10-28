@@ -42,7 +42,7 @@ export interface AgentProxy {
 
 function corsHeaders(): Record<string, string> {
   return {
-    'access-control-allow-origin': '*',
+    'access-control-allow-origin': 'http://localhost:5273',
     'access-control-allow-methods': 'GET, POST, OPTIONS',
     'access-control-allow-headers': '*',
   }

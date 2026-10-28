@@ -42,7 +42,7 @@ export function startOpencodeServer(options: OpencodeServerOptions): Promise<Ope
   return new Promise((resolve, reject) => {
     let child: ChildProcess
     try {
-      child = spawn(path, args, { cwd: options.directory, stdio: ['ignore', 'pipe', 'pipe'] })
+      child = spawn(path, args, { cwd: options.directory, stdio: ['ignore', 'pipe', 'pipe'], env: process.env })
     }
     catch (error) {
       reject(error)
