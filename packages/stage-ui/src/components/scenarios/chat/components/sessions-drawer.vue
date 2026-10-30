@@ -10,11 +10,11 @@ import { useI18n } from 'vue-i18n'
 
 import { useAnalytics } from '../../../../composables/use-analytics'
 import { useBreakpoints } from '../../../../composables/use-breakpoints'
-import { extractMessageText } from '../../../../libs/chat-sync'
 import { useAuthStore } from '../../../../stores/auth'
 import { useChatSessionStore } from '../../../../stores/chat/session-store'
 import { useAiriCardStore } from '../../../../stores/modules/airi-card'
 import { useConsciousnessStore } from '../../../../stores/modules/consciousness'
+import { sessionPreview } from './session-preview'
 
 /**
  * Bottom-sheet (mobile) / centered-modal (desktop) UI surface that lists every
@@ -82,30 +82,8 @@ const ownedSessions = computed(() => {
   return Object.values(sessionMetas.value).filter(meta => meta.userId === effectiveUserId)
 })
 
-/**
- * Pull a 1-line preview from the first non-system message; falls back to the
- * stored title or a generic placeholder when nothing readable is available.
- *
- * Before:
- * - messages: [system, { role: 'user', content: 'Tell me about the moon today' }, ...]
- *
- * After:
- * - "Tell me about the moon today"
- */
 function previewFor(meta: ChatSessionMeta): string {
-  if (meta.title)
-    return meta.title
-
-  const messages = sessionMessages.value[meta.sessionId] ?? []
-  for (const message of messages) {
-    if (message.role === 'system')
-      continue
-    const trimmed = extractMessageText(message).replace(/\s+/g, ' ').trim()
-    if (trimmed)
-      return trimmed.length > 80 ? `${trimmed.slice(0, 80)}…` : trimmed
-  }
-
-  return t('stage.chat.sessions.new-chat-fallback')
+  return sessionPreview(meta, sessionMessages.value[meta.sessionId]) ?? t('stage.chat.sessions.new-chat-fallback')
 }
 
 const RELATIVE_UNITS: Array<[Intl.RelativeTimeFormatUnit, number]> = [

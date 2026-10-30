@@ -1,3 +1,15 @@
+agent-backend:
+  title: Agent backend
+  unavailable: (unavailable)
+  not-running: Not running
+  not-running-error: 'Not running: {error}'
+  switch: Click to switch backend
+  session: Agent session
+  session-pending: Starts with the first message
+  copy-session: Click to copy the full session id
+  session-copied: Session id copied
+  folder: Folder
+  desktop-only: Agent backends run in the desktop app only. On the web this choice is only saved.
 chat:
   actions:
     retry: Retry
@@ -14,6 +26,7 @@ chat:
     cloud-badge: Synced to cloud
     new-chat-fallback: New chat
     delete: Delete conversation
+    current: Current conversation
 message: Say something...
 send-mode:
   title: Send key

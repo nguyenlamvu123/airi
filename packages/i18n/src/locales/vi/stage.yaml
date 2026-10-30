@@ -1,3 +1,15 @@
+agent-backend:
+  title: Agent backend
+  unavailable: (không có trên máy)
+  not-running: Chưa chạy
+  not-running-error: 'Chưa chạy: {error}'
+  switch: Bấm để đổi backend
+  session: Phiên agent
+  session-pending: Bắt đầu từ tin nhắn đầu tiên
+  copy-session: Bấm để chép id phiên đầy đủ
+  session-copied: Đã chép id phiên
+  folder: Thư mục
+  desktop-only: Agent backend chỉ chạy trong app desktop. Trên web, lựa chọn này chỉ được lưu lại.
 chat:
   actions:
     retry: Thử lại
@@ -14,6 +26,7 @@ chat:
     cloud-badge: Đã đồng bộ đám mây
     new-chat-fallback: Cuộc trò chuyện mới
     delete: Xóa đoạn hội thoại
+    current: Đoạn hội thoại hiện tại
 message: Nói gì đó...
 send-mode:
   title: Gửi key
